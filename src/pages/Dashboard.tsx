@@ -6,6 +6,7 @@ import {
   ArrowRight,
   AlertCircle,
 } from "lucide-react";
+import { cn } from "@/lib/utils";
 import StatCard from "@/components/StatCard";
 import { PhaseBadge } from "@/components/PhaseBadge";
 import { Button } from "@/components/ui/button";
