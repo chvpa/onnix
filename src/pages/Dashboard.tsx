@@ -166,9 +166,4 @@ const Dashboard = () => {
   );
 };
 
-// helper
-function cn(...classes: (string | boolean | undefined)[]) {
-  return classes.filter(Boolean).join(" ");
-}
-
 export default Dashboard;
