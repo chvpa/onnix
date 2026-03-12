@@ -10,9 +10,10 @@ import {
   Sun,
   Moon,
   Zap,
+  Menu,
+  X,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
 
 const navItems = [
   { to: "/", icon: LayoutDashboard, label: "Dashboard" },
@@ -29,17 +30,13 @@ interface AppSidebarProps {
 
 const AppSidebar = ({ darkMode, onToggleDarkMode }: AppSidebarProps) => {
   const [collapsed, setCollapsed] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
   const location = useLocation();
 
-  return (
-    <aside
-      className={cn(
-        "flex flex-col border-r border-sidebar-border bg-sidebar transition-all duration-300",
-        collapsed ? "w-[68px]" : "w-[240px]"
-      )}
-    >
+  const sidebarContent = (
+    <>
       {/* Logo */}
-      <div className="flex h-16 items-center gap-2 border-b border-sidebar-border px-4">
+      <div className="flex h-14 items-center gap-2 border-b border-sidebar-border px-4">
         <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-primary">
           <Zap className="h-4 w-4 text-primary-foreground" />
         </div>
@@ -48,17 +45,26 @@ const AppSidebar = ({ darkMode, onToggleDarkMode }: AppSidebarProps) => {
             Onnix
           </span>
         )}
+        {/* Close on mobile */}
+        <button
+          onClick={() => setMobileOpen(false)}
+          className="ml-auto md:hidden rounded-lg p-1 text-sidebar-foreground/70 hover:bg-sidebar-accent/50"
+        >
+          <X className="h-5 w-5" />
+        </button>
       </div>
 
       {/* Navigation */}
       <nav className="flex-1 space-y-1 p-3">
         {navItems.map((item) => {
-          const isActive = location.pathname === item.to || 
+          const isActive =
+            location.pathname === item.to ||
             (item.to !== "/" && location.pathname.startsWith(item.to));
           return (
             <NavLink
               key={item.to}
               to={item.to}
+              onClick={() => setMobileOpen(false)}
               className={cn(
                 "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
                 isActive
@@ -84,7 +90,7 @@ const AppSidebar = ({ darkMode, onToggleDarkMode }: AppSidebarProps) => {
         </button>
         <button
           onClick={() => setCollapsed(!collapsed)}
-          className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground transition-colors"
+          className="hidden md:flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground transition-colors"
         >
           <ChevronLeft
             className={cn(
@@ -95,7 +101,55 @@ const AppSidebar = ({ darkMode, onToggleDarkMode }: AppSidebarProps) => {
           {!collapsed && <span>Colapsar</span>}
         </button>
       </div>
-    </aside>
+    </>
+  );
+
+  return (
+    <>
+      {/* Mobile top bar */}
+      <div className="md:hidden fixed top-0 left-0 right-0 z-40 flex h-14 items-center gap-3 border-b border-border bg-background px-4">
+        <button
+          onClick={() => setMobileOpen(true)}
+          className="rounded-lg p-1.5 text-foreground hover:bg-muted transition-colors"
+        >
+          <Menu className="h-5 w-5" />
+        </button>
+        <div className="flex items-center gap-2">
+          <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary">
+            <Zap className="h-3.5 w-3.5 text-primary-foreground" />
+          </div>
+          <span className="text-base font-bold tracking-tight text-foreground">Onnix</span>
+        </div>
+      </div>
+
+      {/* Mobile overlay */}
+      {mobileOpen && (
+        <div
+          className="md:hidden fixed inset-0 z-50 bg-foreground/20 backdrop-blur-sm"
+          onClick={() => setMobileOpen(false)}
+        />
+      )}
+
+      {/* Mobile drawer */}
+      <aside
+        className={cn(
+          "md:hidden fixed inset-y-0 left-0 z-50 flex w-[260px] flex-col bg-sidebar transition-transform duration-300",
+          mobileOpen ? "translate-x-0" : "-translate-x-full"
+        )}
+      >
+        {sidebarContent}
+      </aside>
+
+      {/* Desktop sidebar */}
+      <aside
+        className={cn(
+          "hidden md:flex flex-col border-r border-sidebar-border bg-sidebar transition-all duration-300",
+          collapsed ? "w-[68px]" : "w-[220px]"
+        )}
+      >
+        {sidebarContent}
+      </aside>
+    </>
   );
 };
 
