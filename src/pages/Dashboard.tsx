@@ -29,48 +29,27 @@ const Dashboard = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="p-6 lg:p-8 space-y-8 max-w-7xl">
+    <div className="p-4 sm:p-6 lg:p-8 space-y-6 lg:space-y-8 max-w-7xl">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-bold text-foreground">Dashboard</h1>
-        <p className="text-muted-foreground mt-1">Resumen general de la plataforma</p>
+        <h1 className="text-xl sm:text-2xl font-bold text-foreground">Dashboard</h1>
+        <p className="text-sm text-muted-foreground mt-0.5">Resumen general de la plataforma</p>
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatCard
-          title="Clientes activos"
-          value={12}
-          icon={Users}
-          trend={{ value: 8, positive: true }}
-        />
-        <StatCard
-          title="Proyectos en curso"
-          value={18}
-          icon={FolderKanban}
-          subtitle="4 en deploy esta semana"
-        />
-        <StatCard
-          title="Horas consumidas"
-          value="1,240"
-          icon={Clock}
-          subtitle="de 2,500 contratadas"
-          trend={{ value: 12, positive: false }}
-        />
-        <StatCard
-          title="Tickets abiertos"
-          value={7}
-          icon={TicketCheck}
-          trend={{ value: 15, positive: true }}
-        />
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+        <StatCard title="Clientes activos" value={12} icon={Users} trend={{ value: 8, positive: true }} />
+        <StatCard title="Proyectos en curso" value={18} icon={FolderKanban} subtitle="4 en deploy esta semana" />
+        <StatCard title="Horas consumidas" value="1,240" icon={Clock} subtitle="de 2,500 contratadas" trend={{ value: 12, positive: false }} />
+        <StatCard title="Tickets abiertos" value={7} icon={TicketCheck} trend={{ value: 15, positive: true }} />
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 lg:gap-6">
         {/* Recent Projects */}
         <div className="lg:col-span-2 rounded-xl border border-border bg-card">
-          <div className="flex items-center justify-between border-b border-border p-5">
-            <h2 className="font-semibold text-card-foreground">Proyectos recientes</h2>
-            <Button variant="ghost" size="sm" onClick={() => navigate("/projects")}>
+          <div className="flex items-center justify-between border-b border-border px-4 py-3 sm:p-5">
+            <h2 className="text-sm sm:text-base font-semibold text-card-foreground">Proyectos recientes</h2>
+            <Button variant="ghost" size="sm" onClick={() => navigate("/projects")} className="text-xs">
               Ver todos <ArrowRight className="ml-1 h-3 w-3" />
             </Button>
           </div>
@@ -78,23 +57,18 @@ const Dashboard = () => {
             {recentProjects.map((project) => (
               <div
                 key={project.id}
-                className="flex items-center justify-between p-4 hover:bg-muted/50 transition-colors cursor-pointer"
+                className="flex items-center justify-between p-3 sm:p-4 hover:bg-muted/50 transition-colors cursor-pointer"
               >
-                <div className="space-y-1">
-                  <p className="text-sm font-medium text-card-foreground">{project.name}</p>
+                <div className="space-y-0.5 min-w-0 flex-1">
+                  <p className="text-sm font-medium text-card-foreground truncate">{project.name}</p>
                   <p className="text-xs text-muted-foreground">{project.client}</p>
                 </div>
-                <div className="flex items-center gap-3">
-                  <PhaseBadge phase={project.phase} />
-                  <div className="w-20 h-1.5 rounded-full bg-muted overflow-hidden">
-                    <div
-                      className="h-full rounded-full bg-primary transition-all"
-                      style={{ width: `${project.progress}%` }}
-                    />
+                <div className="flex items-center gap-2 sm:gap-3 shrink-0 ml-3">
+                  <PhaseBadge phase={project.phase} className="hidden sm:inline-flex" />
+                  <div className="w-12 sm:w-20 h-1.5 rounded-full bg-muted overflow-hidden">
+                    <div className="h-full rounded-full bg-primary transition-all" style={{ width: `${project.progress}%` }} />
                   </div>
-                  <span className="text-xs text-muted-foreground w-8 text-right">
-                    {project.progress}%
-                  </span>
+                  <span className="text-xs text-muted-foreground w-8 text-right">{project.progress}%</span>
                 </div>
               </div>
             ))}
@@ -103,32 +77,24 @@ const Dashboard = () => {
 
         {/* Recent Tickets */}
         <div className="rounded-xl border border-border bg-card">
-          <div className="flex items-center justify-between border-b border-border p-5">
-            <h2 className="font-semibold text-card-foreground">Tickets recientes</h2>
-            <Button variant="ghost" size="sm" onClick={() => navigate("/tickets")}>
+          <div className="flex items-center justify-between border-b border-border px-4 py-3 sm:p-5">
+            <h2 className="text-sm sm:text-base font-semibold text-card-foreground">Tickets recientes</h2>
+            <Button variant="ghost" size="sm" onClick={() => navigate("/tickets")} className="text-xs">
               Ver todos <ArrowRight className="ml-1 h-3 w-3" />
             </Button>
           </div>
           <div className="divide-y divide-border">
             {recentTickets.map((ticket) => (
-              <div
-                key={ticket.id}
-                className="flex items-start gap-3 p-4 hover:bg-muted/50 transition-colors cursor-pointer"
-              >
+              <div key={ticket.id} className="flex items-start gap-3 p-3 sm:p-4 hover:bg-muted/50 transition-colors cursor-pointer">
                 <AlertCircle
                   className={cn(
                     "h-4 w-4 mt-0.5 shrink-0",
-                    ticket.priority === "alta"
-                      ? "text-destructive"
-                      : ticket.priority === "media"
-                      ? "text-warning"
-                      : "text-muted-foreground"
+                    ticket.priority === "alta" ? "text-destructive" :
+                    ticket.priority === "media" ? "text-warning" : "text-muted-foreground"
                   )}
                 />
-                <div className="space-y-1 min-w-0">
-                  <p className="text-sm font-medium text-card-foreground truncate">
-                    {ticket.title}
-                  </p>
+                <div className="space-y-0.5 min-w-0">
+                  <p className="text-sm font-medium text-card-foreground truncate">{ticket.title}</p>
                   <div className="flex items-center gap-2 text-xs text-muted-foreground">
                     <span>{ticket.client}</span>
                     <span>·</span>
@@ -142,24 +108,19 @@ const Dashboard = () => {
       </div>
 
       {/* Phase pipeline */}
-      <div className="rounded-xl border border-border bg-card p-5">
-        <h2 className="font-semibold text-card-foreground mb-4">Pipeline de fases</h2>
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
-          {(["discovery", "planning", "development", "testing", "deploy", "support"] as const).map(
-            (phase, i) => {
-              const counts = [2, 3, 5, 4, 2, 2];
-              return (
-                <div
-                  key={phase}
-                  className="rounded-lg border border-border p-4 text-center hover:bg-muted/50 transition-colors cursor-pointer"
-                >
-                  <PhaseBadge phase={phase} className="mb-2" />
-                  <p className="text-2xl font-bold text-card-foreground">{counts[i]}</p>
-                  <p className="text-xs text-muted-foreground mt-1">proyectos</p>
-                </div>
-              );
-            }
-          )}
+      <div className="rounded-xl border border-border bg-card p-4 sm:p-5">
+        <h2 className="text-sm sm:text-base font-semibold text-card-foreground mb-3 sm:mb-4">Pipeline de fases</h2>
+        <div className="grid grid-cols-3 sm:grid-cols-3 lg:grid-cols-6 gap-2 sm:gap-3">
+          {(["discovery", "planning", "development", "testing", "deploy", "support"] as const).map((phase, i) => {
+            const counts = [2, 3, 5, 4, 2, 2];
+            return (
+              <div key={phase} className="rounded-lg border border-border p-3 sm:p-4 text-center hover:bg-muted/50 transition-colors cursor-pointer">
+                <PhaseBadge phase={phase} className="mb-1.5 sm:mb-2 text-[10px] sm:text-xs" />
+                <p className="text-lg sm:text-2xl font-bold text-card-foreground">{counts[i]}</p>
+                <p className="text-[10px] sm:text-xs text-muted-foreground mt-0.5">proyectos</p>
+              </div>
+            );
+          })}
         </div>
       </div>
     </div>
