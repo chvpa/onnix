@@ -3,30 +3,8 @@ import { Search, Plus, AlertCircle, Clock, MessageSquare } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
-
-type Priority = "alta" | "media" | "baja";
-type TicketStatus = "abierto" | "en_progreso" | "resuelto";
-
-interface Ticket {
-  id: number;
-  title: string;
-  client: string;
-  type: string;
-  priority: Priority;
-  status: TicketStatus;
-  assignee: string;
-  created: string;
-  messages: number;
-}
-
-const mockTickets: Ticket[] = [
-  { id: 1, title: "Error en checkout - no procesa pagos", client: "TechCorp", type: "Bug", priority: "alta", status: "abierto", assignee: "Carlos Dev", created: "hace 2h", messages: 3 },
-  { id: 2, title: "Actualizar logo en header", client: "FinBank", type: "Cambio visual", priority: "baja", status: "en_progreso", assignee: "Ana CX", created: "hace 5h", messages: 1 },
-  { id: 3, title: "Rendimiento lento en dashboard", client: "DataViz", type: "Performance", priority: "media", status: "abierto", assignee: "Sin asignar", created: "hace 1d", messages: 5 },
-  { id: 4, title: "Nuevo campo en formulario de registro", client: "CloudNet", type: "Feature", priority: "media", status: "en_progreso", assignee: "Pedro Dev", created: "hace 2d", messages: 8 },
-  { id: 5, title: "Error 500 en API de reportes", client: "TechCorp", type: "Bug", priority: "alta", status: "abierto", assignee: "Carlos Dev", created: "hace 3h", messages: 2 },
-  { id: 6, title: "Exportar CSV no incluye fechas", client: "EduTech", type: "Bug", priority: "media", status: "resuelto", assignee: "Laura DA", created: "hace 3d", messages: 4 },
-];
+import { mockTickets } from "@/data/mockData";
+import { TicketStatus } from "@/types";
 
 const statusLabels: Record<TicketStatus, string> = {
   abierto: "Abierto",
@@ -54,11 +32,11 @@ const TicketsPage = () => {
   };
 
   return (
-    <div className="p-6 lg:p-8 space-y-6 max-w-7xl">
-      <div className="flex items-center justify-between">
+    <div className="p-4 sm:p-6 lg:p-8 space-y-6 max-w-7xl">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold text-foreground">Tickets de soporte</h1>
-          <p className="text-muted-foreground mt-1">Gestión de solicitudes y soporte</p>
+          <h1 className="text-xl sm:text-2xl font-bold text-foreground">Tickets de soporte</h1>
+          <p className="text-sm text-muted-foreground mt-0.5">Gestión de solicitudes y soporte</p>
         </div>
         <Button>
           <Plus className="h-4 w-4 mr-1" /> Nuevo ticket
@@ -68,14 +46,9 @@ const TicketsPage = () => {
       <div className="flex flex-col sm:flex-row gap-3">
         <div className="relative max-w-sm flex-1">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input
-            placeholder="Buscar tickets..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="pl-9"
-          />
+          <Input placeholder="Buscar tickets..." value={search} onChange={(e) => setSearch(e.target.value)} className="pl-9" />
         </div>
-        <div className="flex items-center gap-1.5">
+        <div className="flex items-center gap-1.5 flex-wrap">
           {(["all", "abierto", "en_progreso", "resuelto"] as const).map((status) => (
             <button
               key={status}
@@ -95,25 +68,22 @@ const TicketsPage = () => {
 
       <div className="space-y-2">
         {filtered.map((ticket) => (
-          <div
-            key={ticket.id}
-            className="rounded-xl border border-border bg-card p-4 hover:shadow-sm transition-shadow cursor-pointer flex items-start gap-4"
-          >
+          <div key={ticket.id} className="rounded-xl border border-border bg-card p-4 hover:shadow-sm transition-shadow cursor-pointer flex flex-col sm:flex-row sm:items-start gap-3 sm:gap-4">
             <AlertCircle
               className={cn(
-                "h-5 w-5 mt-0.5 shrink-0",
+                "h-5 w-5 shrink-0 hidden sm:block mt-0.5",
                 ticket.priority === "alta" ? "text-destructive" :
                 ticket.priority === "media" ? "text-warning" :
                 "text-muted-foreground"
               )}
             />
             <div className="flex-1 min-w-0">
-              <div className="flex items-start justify-between gap-4">
+              <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-2 sm:gap-4">
                 <div>
                   <h3 className="text-sm font-medium text-card-foreground">{ticket.title}</h3>
                   <div className="flex items-center gap-2 mt-1 flex-wrap">
                     <span className="text-xs text-muted-foreground">{ticket.client}</span>
-                    <span className="text-xs text-muted-foreground">·</span>
+                    <span className="text-xs text-muted-foreground hidden sm:inline">·</span>
                     <span className={cn(
                       "inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium",
                       ticket.status === "abierto" ? "bg-destructive/10 text-destructive" :
@@ -128,12 +98,8 @@ const TicketsPage = () => {
                   </div>
                 </div>
                 <div className="flex items-center gap-3 text-xs text-muted-foreground shrink-0">
-                  <span className="flex items-center gap-1">
-                    <MessageSquare className="h-3 w-3" /> {ticket.messages}
-                  </span>
-                  <span className="flex items-center gap-1">
-                    <Clock className="h-3 w-3" /> {ticket.created}
-                  </span>
+                  <span className="flex items-center gap-1"><MessageSquare className="h-3 w-3" /> {ticket.messages}</span>
+                  <span className="flex items-center gap-1"><Clock className="h-3 w-3" /> {ticket.created}</span>
                 </div>
               </div>
               <p className="text-xs text-muted-foreground mt-2">Asignado a: {ticket.assignee}</p>
