@@ -1,50 +1,18 @@
 import { useState, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 import { Search, Plus, List, Columns3, GripVertical, Clock, User, ChevronRight, ChevronLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { PhaseBadge } from "@/components/PhaseBadge";
 import { cn } from "@/lib/utils";
-
-type Phase = "discovery" | "planning" | "development" | "testing" | "deploy" | "support";
-
-interface Project {
-  id: number;
-  name: string;
-  client: string;
-  phase: Phase;
-  progress: number;
-  hoursEstimated: number;
-  hoursReal: number;
-  tasksTotal: number;
-  tasksDone: number;
-  assignee: string;
-}
-
-const initialProjects: Project[] = [
-  { id: 1, name: "Portal E-commerce", client: "TechCorp", phase: "development", progress: 65, hoursEstimated: 120, hoursReal: 82, tasksTotal: 24, tasksDone: 16, assignee: "Carlos Dev" },
-  { id: 2, name: "App Móvil Finanzas", client: "FinBank", phase: "testing", progress: 85, hoursEstimated: 200, hoursReal: 175, tasksTotal: 32, tasksDone: 28, assignee: "Pedro Dev" },
-  { id: 3, name: "Dashboard Analytics", client: "DataViz", phase: "planning", progress: 25, hoursEstimated: 80, hoursReal: 18, tasksTotal: 12, tasksDone: 3, assignee: "Laura DA" },
-  { id: 4, name: "API Gateway", client: "CloudNet", phase: "deploy", progress: 95, hoursEstimated: 60, hoursReal: 58, tasksTotal: 15, tasksDone: 14, assignee: "Carlos Dev" },
-  { id: 5, name: "CRM Integration", client: "TechCorp", phase: "discovery", progress: 10, hoursEstimated: 90, hoursReal: 8, tasksTotal: 8, tasksDone: 1, assignee: "Ana CX" },
-  { id: 6, name: "Mobile Banking v2", client: "FinBank", phase: "development", progress: 45, hoursEstimated: 150, hoursReal: 65, tasksTotal: 28, tasksDone: 12, assignee: "Pedro Dev" },
-  { id: 7, name: "Data Pipeline", client: "DataViz", phase: "testing", progress: 78, hoursEstimated: 100, hoursReal: 80, tasksTotal: 20, tasksDone: 16, assignee: "Laura DA" },
-  { id: 8, name: "Cloud Migration", client: "CloudNet", phase: "support", progress: 100, hoursEstimated: 40, hoursReal: 42, tasksTotal: 10, tasksDone: 10, assignee: "Carlos Dev" },
-];
-
-const phases: Phase[] = ["discovery", "planning", "development", "testing", "deploy", "support"];
-const phaseLabels: Record<Phase, string> = {
-  discovery: "Descubrimiento",
-  planning: "Planificación",
-  development: "Desarrollo",
-  testing: "Testing",
-  deploy: "Deploy",
-  support: "Soporte",
-};
+import { mockProjects as initialProjects } from "@/data/mockData";
+import { Phase, Project, phases, phaseLabels } from "@/types";
 
 const ProjectsPage = () => {
+  const navigate = useNavigate();
   const [search, setSearch] = useState("");
   const [view, setView] = useState<"kanban" | "list">("kanban");
-  const [projects, setProjects] = useState(initialProjects);
+  const [projects, setProjects] = useState<Project[]>(initialProjects);
   const [draggedId, setDraggedId] = useState<number | null>(null);
   const [dragOverPhase, setDragOverPhase] = useState<Phase | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -58,16 +26,6 @@ const ProjectsPage = () => {
   const handleDragStart = (e: React.DragEvent, projectId: number) => {
     setDraggedId(projectId);
     e.dataTransfer.effectAllowed = "move";
-  };
-
-  const handleDragOver = (e: React.DragEvent, phase: Phase) => {
-    e.preventDefault();
-    e.dataTransfer.dropEffect = "move";
-    setDragOverPhase(phase);
-  };
-
-  const handleDragLeave = () => {
-    setDragOverPhase(null);
   };
 
   const handleDrop = (e: React.DragEvent, targetPhase: Phase) => {
@@ -93,13 +51,8 @@ const ProjectsPage = () => {
     );
   };
 
-  const scrollKanban = (direction: "left" | "right") => {
-    scrollRef.current?.scrollBy({ left: direction === "left" ? -300 : 300, behavior: "smooth" });
-  };
-
   return (
     <div className="p-4 sm:p-6 lg:p-8 space-y-5 h-full flex flex-col">
-      {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
           <h1 className="text-xl sm:text-2xl font-bold text-foreground">Proyectos</h1>
@@ -114,8 +67,7 @@ const ProjectsPage = () => {
                 view === "kanban" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"
               )}
             >
-              <Columns3 className="h-3.5 w-3.5 inline mr-1" />
-              Kanban
+              <Columns3 className="h-3.5 w-3.5 inline mr-1" />Kanban
             </button>
             <button
               onClick={() => setView("list")}
@@ -124,8 +76,7 @@ const ProjectsPage = () => {
                 view === "list" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"
               )}
             >
-              <List className="h-3.5 w-3.5 inline mr-1" />
-              Lista
+              <List className="h-3.5 w-3.5 inline mr-1" />Lista
             </button>
           </div>
           <Button size="sm">
@@ -134,38 +85,21 @@ const ProjectsPage = () => {
         </div>
       </div>
 
-      {/* Search */}
       <div className="relative max-w-sm">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-        <Input
-          placeholder="Buscar proyectos..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          className="pl-9 h-9"
-        />
+        <Input placeholder="Buscar proyectos..." value={search} onChange={(e) => setSearch(e.target.value)} className="pl-9 h-9" />
       </div>
 
-      {/* Kanban View */}
       {view === "kanban" ? (
         <div className="flex-1 min-h-0 relative">
-          {/* Scroll arrows for mobile */}
-          <button
-            onClick={() => scrollKanban("left")}
-            className="absolute left-0 top-1/2 -translate-y-1/2 z-10 md:hidden bg-background/90 border border-border rounded-full p-1 shadow-sm"
-          >
+          <button onClick={() => scrollRef.current?.scrollBy({ left: -300, behavior: "smooth" })} className="absolute left-0 top-1/2 -translate-y-1/2 z-10 md:hidden bg-background/90 border border-border rounded-full p-1 shadow-sm">
             <ChevronLeft className="h-4 w-4 text-muted-foreground" />
           </button>
-          <button
-            onClick={() => scrollKanban("right")}
-            className="absolute right-0 top-1/2 -translate-y-1/2 z-10 md:hidden bg-background/90 border border-border rounded-full p-1 shadow-sm"
-          >
+          <button onClick={() => scrollRef.current?.scrollBy({ left: 300, behavior: "smooth" })} className="absolute right-0 top-1/2 -translate-y-1/2 z-10 md:hidden bg-background/90 border border-border rounded-full p-1 shadow-sm">
             <ChevronRight className="h-4 w-4 text-muted-foreground" />
           </button>
 
-          <div
-            ref={scrollRef}
-            className="flex gap-3 overflow-x-auto pb-4 h-full snap-x snap-mandatory md:snap-none scrollbar-thin"
-          >
+          <div ref={scrollRef} className="flex gap-3 overflow-x-auto pb-4 h-full snap-x snap-mandatory md:snap-none scrollbar-thin">
             {phases.map((phase) => {
               const phaseProjects = filtered.filter((p) => p.phase === phase);
               return (
@@ -175,26 +109,19 @@ const ProjectsPage = () => {
                     "flex-shrink-0 w-[280px] sm:w-[260px] md:flex-1 md:min-w-[200px] flex flex-col rounded-xl border bg-card transition-colors snap-center",
                     dragOverPhase === phase ? "border-primary bg-accent/50" : "border-border"
                   )}
-                  onDragOver={(e) => handleDragOver(e, phase)}
-                  onDragLeave={handleDragLeave}
+                  onDragOver={(e) => { e.preventDefault(); setDragOverPhase(phase); }}
+                  onDragLeave={() => setDragOverPhase(null)}
                   onDrop={(e) => handleDrop(e, phase)}
                 >
-                  {/* Column header */}
                   <div className="flex items-center justify-between px-3 py-2.5 border-b border-border">
                     <div className="flex items-center gap-2">
                       <PhaseBadge phase={phase} />
-                      <span className="text-xs text-muted-foreground font-medium">
-                        {phaseProjects.length}
-                      </span>
+                      <span className="text-xs text-muted-foreground font-medium">{phaseProjects.length}</span>
                     </div>
                   </div>
-
-                  {/* Cards */}
                   <div className="flex-1 overflow-y-auto p-2 space-y-2">
                     {phaseProjects.length === 0 && (
-                      <div className="flex items-center justify-center py-8 text-xs text-muted-foreground">
-                        Sin proyectos
-                      </div>
+                      <div className="flex items-center justify-center py-8 text-xs text-muted-foreground">Sin proyectos</div>
                     )}
                     {phaseProjects.map((project) => (
                       <div
@@ -202,6 +129,7 @@ const ProjectsPage = () => {
                         draggable
                         onDragStart={(e) => handleDragStart(e, project.id)}
                         onDragEnd={() => { setDraggedId(null); setDragOverPhase(null); }}
+                        onClick={() => navigate(`/projects/${project.id}`)}
                         className={cn(
                           "rounded-lg border border-border bg-background p-3 cursor-grab active:cursor-grabbing hover:shadow-sm transition-all group",
                           draggedId === project.id && "opacity-40 scale-95"
@@ -209,50 +137,25 @@ const ProjectsPage = () => {
                       >
                         <div className="flex items-start justify-between gap-2">
                           <div className="min-w-0 flex-1">
-                            <p className="text-sm font-medium text-foreground truncate">
-                              {project.name}
-                            </p>
+                            <p className="text-sm font-medium text-foreground truncate">{project.name}</p>
                             <p className="text-xs text-muted-foreground mt-0.5">{project.client}</p>
                           </div>
                           <GripVertical className="h-4 w-4 text-muted-foreground/40 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity" />
                         </div>
-
-                        {/* Progress */}
                         <div className="mt-2.5">
                           <div className="w-full h-1 rounded-full bg-muted overflow-hidden">
-                            <div
-                              className="h-full rounded-full bg-primary transition-all"
-                              style={{ width: `${project.progress}%` }}
-                            />
+                            <div className="h-full rounded-full bg-primary transition-all" style={{ width: `${project.progress}%` }} />
                           </div>
                         </div>
-
-                        {/* Meta */}
                         <div className="flex items-center justify-between mt-2 text-xs text-muted-foreground">
-                          <span className="flex items-center gap-1">
-                            <Clock className="h-3 w-3" />
-                            {project.hoursReal}/{project.hoursEstimated}h
-                          </span>
-                          <span className="flex items-center gap-1">
-                            <User className="h-3 w-3" />
-                            {project.assignee.split(" ")[0]}
-                          </span>
+                          <span className="flex items-center gap-1"><Clock className="h-3 w-3" /> {project.hoursReal}/{project.hoursEstimated}h</span>
+                          <span className="flex items-center gap-1"><User className="h-3 w-3" /> {project.assignee.split(" ")[0]}</span>
                         </div>
-
-                        {/* Move buttons */}
                         <div className="flex items-center justify-between mt-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                          <button
-                            onClick={(e) => { e.stopPropagation(); moveProject(project.id, "prev"); }}
-                            disabled={phases.indexOf(project.phase) === 0}
-                            className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
-                          >
+                          <button onClick={(e) => { e.stopPropagation(); moveProject(project.id, "prev"); }} disabled={phases.indexOf(project.phase) === 0} className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground disabled:opacity-30 disabled:cursor-not-allowed transition-colors">
                             <ChevronLeft className="h-3 w-3" /> Anterior
                           </button>
-                          <button
-                            onClick={(e) => { e.stopPropagation(); moveProject(project.id, "next"); }}
-                            disabled={phases.indexOf(project.phase) === phases.length - 1}
-                            className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
-                          >
+                          <button onClick={(e) => { e.stopPropagation(); moveProject(project.id, "next"); }} disabled={phases.indexOf(project.phase) === phases.length - 1} className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground disabled:opacity-30 disabled:cursor-not-allowed transition-colors">
                             Siguiente <ChevronRight className="h-3 w-3" />
                           </button>
                         </div>
@@ -265,12 +168,10 @@ const ProjectsPage = () => {
           </div>
         </div>
       ) : (
-        /* List View */
         <div className="rounded-xl border border-border bg-card overflow-hidden">
-          {/* Mobile card list */}
           <div className="md:hidden divide-y divide-border">
             {filtered.map((project) => (
-              <div key={project.id} className="p-4 space-y-2">
+              <div key={project.id} className="p-4 space-y-2 cursor-pointer hover:bg-muted/30" onClick={() => navigate(`/projects/${project.id}`)}>
                 <div className="flex items-start justify-between">
                   <div>
                     <p className="text-sm font-medium text-card-foreground">{project.name}</p>
@@ -279,9 +180,7 @@ const ProjectsPage = () => {
                   <PhaseBadge phase={project.phase} />
                 </div>
                 <div className="flex items-center gap-4 text-xs text-muted-foreground">
-                  <span className="flex items-center gap-1">
-                    <Clock className="h-3 w-3" /> {project.hoursReal}/{project.hoursEstimated}h
-                  </span>
+                  <span className="flex items-center gap-1"><Clock className="h-3 w-3" /> {project.hoursReal}/{project.hoursEstimated}h</span>
                   <span>{project.tasksDone}/{project.tasksTotal} tareas</span>
                   <div className="flex-1" />
                   <span>{project.progress}%</span>
@@ -292,8 +191,6 @@ const ProjectsPage = () => {
               </div>
             ))}
           </div>
-
-          {/* Desktop table */}
           <div className="hidden md:block overflow-x-auto">
             <table className="w-full">
               <thead>
@@ -308,16 +205,10 @@ const ProjectsPage = () => {
               </thead>
               <tbody className="divide-y divide-border">
                 {filtered.map((project) => (
-                  <tr key={project.id} className="hover:bg-muted/30 transition-colors cursor-pointer">
-                    <td className="px-4 py-3.5">
-                      <span className="text-sm font-medium text-card-foreground">{project.name}</span>
-                    </td>
-                    <td className="px-4 py-3.5">
-                      <span className="text-sm text-muted-foreground">{project.client}</span>
-                    </td>
-                    <td className="px-4 py-3.5">
-                      <PhaseBadge phase={project.phase} />
-                    </td>
+                  <tr key={project.id} className="hover:bg-muted/30 transition-colors cursor-pointer" onClick={() => navigate(`/projects/${project.id}`)}>
+                    <td className="px-4 py-3.5"><span className="text-sm font-medium text-card-foreground">{project.name}</span></td>
+                    <td className="px-4 py-3.5"><span className="text-sm text-muted-foreground">{project.client}</span></td>
+                    <td className="px-4 py-3.5"><PhaseBadge phase={project.phase} /></td>
                     <td className="px-4 py-3.5">
                       <div className="flex items-center gap-2">
                         <div className="w-16 h-1.5 rounded-full bg-muted overflow-hidden">
@@ -331,9 +222,7 @@ const ProjectsPage = () => {
                         {project.hoursReal}/{project.hoursEstimated}h
                       </span>
                     </td>
-                    <td className="px-4 py-3.5">
-                      <span className="text-sm text-muted-foreground">{project.tasksDone}/{project.tasksTotal}</span>
-                    </td>
+                    <td className="px-4 py-3.5"><span className="text-sm text-muted-foreground">{project.tasksDone}/{project.tasksTotal}</span></td>
                   </tr>
                 ))}
               </tbody>
