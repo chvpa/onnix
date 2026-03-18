@@ -17,6 +17,16 @@ const ProjectsPage = () => {
   const [draggedId, setDraggedId] = useState<number | null>(null);
   const [dragOverPhase, setDragOverPhase] = useState<Phase | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const [dialogOpen, setDialogOpen] = useState(false);
+
+  const handleSaveProject = (data: Partial<Project>) => {
+    if (data.id) {
+      setProjects((prev) => prev.map((p) => (p.id === data.id ? { ...p, ...data } as Project : p)));
+    } else {
+      const newId = Math.max(...projects.map((p) => p.id), 0) + 1;
+      setProjects((prev) => [...prev, { ...data, id: newId } as Project]);
+    }
+  };
 
   const filtered = projects.filter(
     (p) =>
