@@ -16,8 +16,19 @@ const statusLabels: Record<TicketStatus, string> = {
 
 const TicketsPage = () => {
   const navigate = useNavigate();
+  const [tickets, setTickets] = useState<Ticket[]>(initialTickets);
   const [search, setSearch] = useState("");
   const [activeStatus, setActiveStatus] = useState<TicketStatus | "all">("all");
+  const [dialogOpen, setDialogOpen] = useState(false);
+
+  const handleSaveTicket = (data: Partial<Ticket>) => {
+    if (data.id) {
+      setTickets((prev) => prev.map((t) => (t.id === data.id ? { ...t, ...data } as Ticket : t)));
+    } else {
+      const newId = Math.max(...tickets.map((t) => t.id), 0) + 1;
+      setTickets((prev) => [...prev, { ...data, id: newId } as Ticket]);
+    }
+  };
 
   const filtered = mockTickets.filter((t) => {
     const matchesSearch =
