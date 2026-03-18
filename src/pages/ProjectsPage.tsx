@@ -90,7 +90,7 @@ const ProjectsPage = () => {
               <List className="h-3.5 w-3.5 inline mr-1" />Lista
             </button>
           </div>
-          <Button size="sm">
+          <Button size="sm" onClick={() => setDialogOpen(true)}>
             <Plus className="h-4 w-4 mr-1" /> <span className="hidden sm:inline">Nuevo proyecto</span><span className="sm:hidden">Nuevo</span>
           </Button>
         </div>
