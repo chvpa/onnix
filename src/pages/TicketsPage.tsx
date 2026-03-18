@@ -125,6 +125,7 @@ const TicketsPage = () => {
           </div>
         ))}
       </div>
+      <TicketDialog open={dialogOpen} onOpenChange={setDialogOpen} onSave={handleSaveTicket} />
     </div>
   );
 };
