@@ -7,6 +7,7 @@ import { PhaseBadge } from "@/components/PhaseBadge";
 import { cn } from "@/lib/utils";
 import { mockProjects as initialProjects } from "@/data/mockData";
 import { Phase, Project, phases, phaseLabels } from "@/types";
+import ProjectDialog from "@/components/ProjectDialog";
 
 const ProjectsPage = () => {
   const navigate = useNavigate();
@@ -16,6 +17,16 @@ const ProjectsPage = () => {
   const [draggedId, setDraggedId] = useState<number | null>(null);
   const [dragOverPhase, setDragOverPhase] = useState<Phase | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const [dialogOpen, setDialogOpen] = useState(false);
+
+  const handleSaveProject = (data: Partial<Project>) => {
+    if (data.id) {
+      setProjects((prev) => prev.map((p) => (p.id === data.id ? { ...p, ...data } as Project : p)));
+    } else {
+      const newId = Math.max(...projects.map((p) => p.id), 0) + 1;
+      setProjects((prev) => [...prev, { ...data, id: newId } as Project]);
+    }
+  };
 
   const filtered = projects.filter(
     (p) =>
@@ -79,7 +90,7 @@ const ProjectsPage = () => {
               <List className="h-3.5 w-3.5 inline mr-1" />Lista
             </button>
           </div>
-          <Button size="sm">
+          <Button size="sm" onClick={() => setDialogOpen(true)}>
             <Plus className="h-4 w-4 mr-1" /> <span className="hidden sm:inline">Nuevo proyecto</span><span className="sm:hidden">Nuevo</span>
           </Button>
         </div>
@@ -230,6 +241,7 @@ const ProjectsPage = () => {
           </div>
         </div>
       )}
+      <ProjectDialog open={dialogOpen} onOpenChange={setDialogOpen} onSave={handleSaveProject} />
     </div>
   );
 };

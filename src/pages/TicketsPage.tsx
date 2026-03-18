@@ -4,8 +4,9 @@ import { Search, Plus, AlertCircle, Clock, MessageSquare } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
-import { mockTickets } from "@/data/mockData";
-import { TicketStatus } from "@/types";
+import { mockTickets as initialTickets } from "@/data/mockData";
+import { Ticket, TicketStatus } from "@/types";
+import TicketDialog from "@/components/TicketDialog";
 
 const statusLabels: Record<TicketStatus, string> = {
   abierto: "Abierto",
@@ -15,10 +16,21 @@ const statusLabels: Record<TicketStatus, string> = {
 
 const TicketsPage = () => {
   const navigate = useNavigate();
+  const [tickets, setTickets] = useState<Ticket[]>(initialTickets);
   const [search, setSearch] = useState("");
   const [activeStatus, setActiveStatus] = useState<TicketStatus | "all">("all");
+  const [dialogOpen, setDialogOpen] = useState(false);
 
-  const filtered = mockTickets.filter((t) => {
+  const handleSaveTicket = (data: Partial<Ticket>) => {
+    if (data.id) {
+      setTickets((prev) => prev.map((t) => (t.id === data.id ? { ...t, ...data } as Ticket : t)));
+    } else {
+      const newId = Math.max(...tickets.map((t) => t.id), 0) + 1;
+      setTickets((prev) => [...prev, { ...data, id: newId } as Ticket]);
+    }
+  };
+
+  const filtered = tickets.filter((t) => {
     const matchesSearch =
       t.title.toLowerCase().includes(search.toLowerCase()) ||
       t.client.toLowerCase().includes(search.toLowerCase());
@@ -27,10 +39,10 @@ const TicketsPage = () => {
   });
 
   const counts = {
-    all: mockTickets.length,
-    abierto: mockTickets.filter((t) => t.status === "abierto").length,
-    en_progreso: mockTickets.filter((t) => t.status === "en_progreso").length,
-    resuelto: mockTickets.filter((t) => t.status === "resuelto").length,
+    all: tickets.length,
+    abierto: tickets.filter((t) => t.status === "abierto").length,
+    en_progreso: tickets.filter((t) => t.status === "en_progreso").length,
+    resuelto: tickets.filter((t) => t.status === "resuelto").length,
   };
 
   return (
@@ -40,7 +52,7 @@ const TicketsPage = () => {
           <h1 className="text-xl sm:text-2xl font-bold text-foreground">Tickets de soporte</h1>
           <p className="text-sm text-muted-foreground mt-0.5">Gestión de solicitudes y soporte</p>
         </div>
-        <Button>
+        <Button onClick={() => setDialogOpen(true)}>
           <Plus className="h-4 w-4 mr-1" /> Nuevo ticket
         </Button>
       </div>
@@ -113,6 +125,7 @@ const TicketsPage = () => {
           </div>
         ))}
       </div>
+      <TicketDialog open={dialogOpen} onOpenChange={setDialogOpen} onSave={handleSaveTicket} />
     </div>
   );
 };
