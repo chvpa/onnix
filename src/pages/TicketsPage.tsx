@@ -52,7 +52,7 @@ const TicketsPage = () => {
           <h1 className="text-xl sm:text-2xl font-bold text-foreground">Tickets de soporte</h1>
           <p className="text-sm text-muted-foreground mt-0.5">Gestión de solicitudes y soporte</p>
         </div>
-        <Button>
+        <Button onClick={() => setDialogOpen(true)}>
           <Plus className="h-4 w-4 mr-1" /> Nuevo ticket
         </Button>
       </div>
