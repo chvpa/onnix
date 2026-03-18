@@ -4,8 +4,9 @@ import { Search, Plus, AlertCircle, Clock, MessageSquare } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
-import { mockTickets } from "@/data/mockData";
-import { TicketStatus } from "@/types";
+import { mockTickets as initialTickets } from "@/data/mockData";
+import { Ticket, TicketStatus } from "@/types";
+import TicketDialog from "@/components/TicketDialog";
 
 const statusLabels: Record<TicketStatus, string> = {
   abierto: "Abierto",
