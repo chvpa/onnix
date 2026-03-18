@@ -39,10 +39,10 @@ const TicketsPage = () => {
   });
 
   const counts = {
-    all: mockTickets.length,
-    abierto: mockTickets.filter((t) => t.status === "abierto").length,
-    en_progreso: mockTickets.filter((t) => t.status === "en_progreso").length,
-    resuelto: mockTickets.filter((t) => t.status === "resuelto").length,
+    all: tickets.length,
+    abierto: tickets.filter((t) => t.status === "abierto").length,
+    en_progreso: tickets.filter((t) => t.status === "en_progreso").length,
+    resuelto: tickets.filter((t) => t.status === "resuelto").length,
   };
 
   return (
