@@ -30,7 +30,7 @@ const TicketsPage = () => {
     }
   };
 
-  const filtered = mockTickets.filter((t) => {
+  const filtered = tickets.filter((t) => {
     const matchesSearch =
       t.title.toLowerCase().includes(search.toLowerCase()) ||
       t.client.toLowerCase().includes(search.toLowerCase());
