@@ -241,12 +241,6 @@ const ProjectsPage = () => {
           </div>
         </div>
       )}
-    </div>
-  );
-};
-
-      <ProjectDialog open={dialogOpen} onOpenChange={setDialogOpen} onSave={handleSaveProject} />
-
       <ProjectDialog open={dialogOpen} onOpenChange={setDialogOpen} onSave={handleSaveProject} />
     </div>
   );
