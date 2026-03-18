@@ -4,9 +4,11 @@ import {
   ArrowLeft, Plus, Clock, User, GripVertical,
   ChevronLeft, ChevronRight, Columns3, List,
   AlertCircle, CheckCircle2, Circle, Ban,
+  History,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { PhaseBadge } from "@/components/PhaseBadge";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import TaskDialog from "@/components/TaskDialog";
 import { cn } from "@/lib/utils";
 import { mockProjects, mockTasks as initialTasks } from "@/data/mockData";
@@ -54,6 +56,7 @@ const ProjectDetailPage = () => {
       setTasks((prev) =>
         prev.map((t) => {
           if (t.id !== draggedId) return t;
+          if (t.phase === targetPhase) return t;
           const entry = {
             id: Date.now(),
             timestamp: new Date().toLocaleString(),
@@ -111,7 +114,18 @@ const ProjectDetailPage = () => {
 
   const handleSaveTask = (taskData: Partial<Task> & { projectId: number }) => {
     if (taskData.id) {
-      setTasks((prev) => prev.map((t) => (t.id === taskData.id ? { ...t, ...taskData } as Task : t)));
+      setTasks((prev) =>
+        prev.map((t) => {
+          if (t.id !== taskData.id) return t;
+          const entry = {
+            id: Date.now(),
+            timestamp: new Date().toLocaleString(),
+            user: "Sistema",
+            action: "Tarea editada",
+          };
+          return { ...t, ...taskData, auditLog: [...t.auditLog, entry] } as Task;
+        })
+      );
     } else {
       const newTask: Task = {
         ...taskData,
@@ -125,8 +139,16 @@ const ProjectDetailPage = () => {
     }
   };
 
+  const deleteTask = (taskId: number) => {
+    setTasks((prev) => prev.filter((t) => t.id !== taskId));
+  };
+
   const hoursPercent = (project.hoursReal / project.hoursEstimated) * 100;
   const completedTasks = tasks.filter((t) => t.status === "completada").length;
+
+  const allAuditEntries = tasks
+    .flatMap((t) => t.auditLog.map((a) => ({ ...a, taskTitle: t.title })))
+    .sort((a, b) => b.id - a.id);
 
   return (
     <div className="p-4 sm:p-6 lg:p-8 space-y-5 h-full flex flex-col">
@@ -293,12 +315,20 @@ const ProjectDetailPage = () => {
                             >
                               <ChevronLeft className="h-3 w-3" /> Ant.
                             </button>
-                            <button
-                              onClick={(e) => { e.stopPropagation(); setEditingTask(task); setDialogOpen(true); }}
-                              className="text-xs text-muted-foreground hover:text-foreground transition-colors"
-                            >
-                              Editar
-                            </button>
+                            <div className="flex items-center gap-2">
+                              <button
+                                onClick={(e) => { e.stopPropagation(); setEditingTask(task); setDialogOpen(true); }}
+                                className="text-xs text-muted-foreground hover:text-foreground transition-colors"
+                              >
+                                Editar
+                              </button>
+                              <button
+                                onClick={(e) => { e.stopPropagation(); deleteTask(task.id); }}
+                                className="text-xs text-destructive/70 hover:text-destructive transition-colors"
+                              >
+                                Eliminar
+                              </button>
+                            </div>
                             <button
                               onClick={(e) => { e.stopPropagation(); moveTask(task.id, "next"); }}
                               disabled={phases.indexOf(task.phase) === phases.length - 1}
@@ -347,6 +377,12 @@ const ProjectDetailPage = () => {
                   )}>
                     {task.priority}
                   </span>
+                  <button
+                    onClick={(e) => { e.stopPropagation(); deleteTask(task.id); }}
+                    className="text-xs text-destructive/70 hover:text-destructive transition-colors shrink-0"
+                  >
+                    Eliminar
+                  </button>
                 </div>
               );
             })}
@@ -354,27 +390,35 @@ const ProjectDetailPage = () => {
         </div>
       )}
 
-      {/* Audit log */}
-      {tasks.some((t) => t.auditLog.length > 0) && (
-        <div className="rounded-xl border border-border bg-card p-4">
-          <h3 className="text-sm font-semibold text-card-foreground mb-3">Registro de auditoría</h3>
-          <div className="space-y-2 max-h-48 overflow-y-auto">
-            {tasks
-              .flatMap((t) => t.auditLog.map((a) => ({ ...a, taskTitle: t.title })))
-              .sort((a, b) => b.id - a.id)
-              .slice(0, 20)
-              .map((entry) => (
-                <div key={entry.id} className="flex items-start gap-2 text-xs">
-                  <span className="text-muted-foreground shrink-0 w-32">{entry.timestamp}</span>
-                  <span className="text-card-foreground">
-                    <strong>{entry.taskTitle}</strong> — {entry.action}
+      {/* Audit log - scrollable */}
+      {allAuditEntries.length > 0 && (
+        <div className="rounded-xl border border-border bg-card">
+          <div className="flex items-center gap-2 px-4 py-3 border-b border-border">
+            <History className="h-4 w-4 text-muted-foreground" />
+            <h3 className="text-sm font-semibold text-card-foreground">Registro de auditoría</h3>
+            <span className="text-xs text-muted-foreground">({allAuditEntries.length})</span>
+          </div>
+          <ScrollArea className="h-52">
+            <div className="p-4 space-y-2">
+              {allAuditEntries.map((entry) => (
+                <div key={entry.id} className="flex items-start gap-3 text-xs py-1.5 border-b border-border/50 last:border-0">
+                  <span className="text-muted-foreground shrink-0 w-36 font-mono">{entry.timestamp}</span>
+                  <div className="flex-1">
+                    <span className="font-medium text-card-foreground">{entry.taskTitle}</span>
+                    <span className="text-muted-foreground"> — {entry.action}</span>
                     {entry.from && entry.to && (
-                      <span className="text-muted-foreground"> ({entry.from} → {entry.to})</span>
+                      <span className="ml-1 text-muted-foreground">
+                        <span className="text-destructive/70">{entry.from}</span>
+                        {" → "}
+                        <span className="text-success/90">{entry.to}</span>
+                      </span>
                     )}
-                  </span>
+                  </div>
+                  <span className="text-muted-foreground/60 shrink-0">{entry.user}</span>
                 </div>
               ))}
-          </div>
+            </div>
+          </ScrollArea>
         </div>
       )}
 
