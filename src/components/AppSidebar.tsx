@@ -9,11 +9,11 @@ import {
   ChevronLeft,
   Sun,
   Moon,
-  Zap,
   Menu,
   X,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import logo from "@/assets/logo_onnix.svg";
 
 const navItems = [
   { to: "/", icon: LayoutDashboard, label: "Dashboard" },
@@ -37,14 +37,7 @@ const AppSidebar = ({ darkMode, onToggleDarkMode }: AppSidebarProps) => {
     <>
       {/* Logo */}
       <div className="flex h-14 items-center gap-2 border-b border-sidebar-border px-4">
-        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-primary">
-          <Zap className="h-4 w-4 text-primary-foreground" />
-        </div>
-        {!collapsed && (
-          <span className="text-lg font-bold tracking-tight text-sidebar-foreground animate-fade-in">
-            Onnix
-          </span>
-        )}
+        <img src={logo} alt="Onnix" className="h-7 w-auto shrink-0 dark:invert" />
         {/* Close on mobile */}
         <button
           onClick={() => setMobileOpen(false)}
@@ -114,12 +107,7 @@ const AppSidebar = ({ darkMode, onToggleDarkMode }: AppSidebarProps) => {
         >
           <Menu className="h-5 w-5" />
         </button>
-        <div className="flex items-center gap-2">
-          <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary">
-            <Zap className="h-3.5 w-3.5 text-primary-foreground" />
-          </div>
-          <span className="text-base font-bold tracking-tight text-foreground">Onnix</span>
-        </div>
+        <img src={logo} alt="Onnix" className="h-6 w-auto dark:invert" />
       </div>
 
       {/* Mobile overlay */}

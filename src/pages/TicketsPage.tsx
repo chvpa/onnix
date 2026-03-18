@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Search, Plus, AlertCircle, Clock, MessageSquare } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -13,6 +14,7 @@ const statusLabels: Record<TicketStatus, string> = {
 };
 
 const TicketsPage = () => {
+  const navigate = useNavigate();
   const [search, setSearch] = useState("");
   const [activeStatus, setActiveStatus] = useState<TicketStatus | "all">("all");
 
@@ -68,7 +70,11 @@ const TicketsPage = () => {
 
       <div className="space-y-2">
         {filtered.map((ticket) => (
-          <div key={ticket.id} className="rounded-xl border border-border bg-card p-4 hover:shadow-sm transition-shadow cursor-pointer flex flex-col sm:flex-row sm:items-start gap-3 sm:gap-4">
+          <div
+            key={ticket.id}
+            onClick={() => navigate(`/tickets/${ticket.id}`)}
+            className="rounded-xl border border-border bg-card p-4 hover:shadow-sm transition-shadow cursor-pointer flex flex-col sm:flex-row sm:items-start gap-3 sm:gap-4"
+          >
             <AlertCircle
               className={cn(
                 "h-5 w-5 shrink-0 hidden sm:block mt-0.5",
