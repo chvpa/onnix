@@ -7,6 +7,7 @@ import { PhaseBadge } from "@/components/PhaseBadge";
 import { cn } from "@/lib/utils";
 import { mockProjects as initialProjects } from "@/data/mockData";
 import { Phase, Project, phases, phaseLabels } from "@/types";
+import ProjectDialog from "@/components/ProjectDialog";
 
 const ProjectsPage = () => {
   const navigate = useNavigate();
