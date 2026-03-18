@@ -245,4 +245,9 @@ const ProjectsPage = () => {
   );
 };
 
+      <ProjectDialog open={dialogOpen} onOpenChange={setDialogOpen} onSave={handleSaveProject} />
+    </div>
+  );
+};
+
 export default ProjectsPage;
