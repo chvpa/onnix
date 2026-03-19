@@ -12,6 +12,7 @@ import ProjectsPage from "@/pages/ProjectsPage";
 import ProjectDetailPage from "@/pages/ProjectDetailPage";
 import TicketsPage from "@/pages/TicketsPage";
 import TicketDetailPage from "@/pages/TicketDetailPage";
+import ApprovalsPage from "@/pages/ApprovalsPage";
 import SettingsPage from "@/pages/SettingsPage";
 import NotFound from "./pages/NotFound";
 
