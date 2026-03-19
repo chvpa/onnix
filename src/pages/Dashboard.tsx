@@ -39,7 +39,7 @@ const Dashboard = () => {
       {/* Stats */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
         <StatCard title="Clientes activos" value={12} icon={Users} trend={{ value: 8, positive: true }} />
-        <StatCard title="Proyectos en curso" value={18} icon={FolderKanban} subtitle="4 en deploy esta semana" />
+        <StatCard title="Proyectos en curso" value={18} icon={FolderKanban} subtitle="4 en producción esta semana" />
         <StatCard title="Horas consumidas" value="1,240" icon={Clock} subtitle="de 2,500 contratadas" trend={{ value: 12, positive: false }} />
         <StatCard title="Tickets abiertos" value={7} icon={TicketCheck} trend={{ value: 15, positive: true }} />
       </div>
