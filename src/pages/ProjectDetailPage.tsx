@@ -32,7 +32,7 @@ const ProjectDetailPage = () => {
   const [dragOverPhase, setDragOverPhase] = useState<Phase | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingTask, setEditingTask] = useState<Task | null>(null);
-  const [defaultPhase, setDefaultPhase] = useState<Phase>("discovery");
+  const [defaultPhase, setDefaultPhase] = useState<Phase>("pendiente");
   const scrollRef = useRef<HTMLDivElement>(null);
 
   if (!project) {
