@@ -13,10 +13,10 @@ import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 
 const recentProjects = [
-  { id: 1, name: "Portal E-commerce", client: "TechCorp", phase: "development" as const, progress: 65 },
+  { id: 1, name: "Portal E-commerce", client: "TechCorp", phase: "desarrollo" as const, progress: 65 },
   { id: 2, name: "App Móvil Finanzas", client: "FinBank", phase: "testing" as const, progress: 85 },
-  { id: 3, name: "Dashboard Analytics", client: "DataViz", phase: "planning" as const, progress: 25 },
-  { id: 4, name: "API Gateway", client: "CloudNet", phase: "deploy" as const, progress: 95 },
+  { id: 3, name: "Dashboard Analytics", client: "DataViz", phase: "pendiente" as const, progress: 25 },
+  { id: 4, name: "API Gateway", client: "CloudNet", phase: "produccion" as const, progress: 95 },
 ];
 
 const recentTickets = [
