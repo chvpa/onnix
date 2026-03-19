@@ -20,6 +20,7 @@ const navItems = [
   { to: "/", icon: LayoutDashboard, label: "Dashboard" },
   { to: "/clients", icon: Users, label: "Clientes" },
   { to: "/projects", icon: FolderKanban, label: "Proyectos" },
+  { to: "/approvals", icon: ClipboardCheck, label: "Aprobaciones" },
   { to: "/tickets", icon: TicketCheck, label: "Soporte" },
   { to: "/settings", icon: Settings, label: "Configuración" },
 ];
