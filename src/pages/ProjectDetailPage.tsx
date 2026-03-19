@@ -219,215 +219,218 @@ const ProjectDetailPage = () => {
         </div>
       </div>
 
-      {/* Kanban */}
-      {view === "kanban" ? (
-        <div className="flex-1 min-h-0 relative">
-          <button
-            onClick={() => scrollRef.current?.scrollBy({ left: -300, behavior: "smooth" })}
-            className="absolute left-0 top-1/2 -translate-y-1/2 z-10 md:hidden bg-background/90 border border-border rounded-full p-1 shadow-sm"
-          >
-            <ChevronLeft className="h-4 w-4 text-muted-foreground" />
-          </button>
-          <button
-            onClick={() => scrollRef.current?.scrollBy({ left: 300, behavior: "smooth" })}
-            className="absolute right-0 top-1/2 -translate-y-1/2 z-10 md:hidden bg-background/90 border border-border rounded-full p-1 shadow-sm"
-          >
-            <ChevronRight className="h-4 w-4 text-muted-foreground" />
-          </button>
+      {/* Main content area - takes all remaining space */}
+      <div className="flex-1 min-h-0 flex flex-col gap-3 overflow-hidden">
+        {/* Kanban / List - scrollable, takes priority */}
+        {view === "kanban" ? (
+          <div className="flex-1 min-h-0 relative">
+            <button
+              onClick={() => scrollRef.current?.scrollBy({ left: -300, behavior: "smooth" })}
+              className="absolute left-0 top-1/2 -translate-y-1/2 z-10 md:hidden bg-background/90 border border-border rounded-full p-1 shadow-sm"
+            >
+              <ChevronLeft className="h-4 w-4 text-muted-foreground" />
+            </button>
+            <button
+              onClick={() => scrollRef.current?.scrollBy({ left: 300, behavior: "smooth" })}
+              className="absolute right-0 top-1/2 -translate-y-1/2 z-10 md:hidden bg-background/90 border border-border rounded-full p-1 shadow-sm"
+            >
+              <ChevronRight className="h-4 w-4 text-muted-foreground" />
+            </button>
 
-          <div ref={scrollRef} className="flex gap-3 overflow-x-auto pb-4 h-full snap-x snap-mandatory md:snap-none scrollbar-thin">
-            {phases.map((phase) => {
-              const phaseTasks = tasks.filter((t) => t.phase === phase);
-              return (
-                <div
-                  key={phase}
-                  className={cn(
-                    "flex-shrink-0 w-[280px] sm:w-[260px] md:flex-1 md:min-w-[180px] flex flex-col rounded-xl border bg-card transition-colors snap-center",
-                    dragOverPhase === phase ? "border-primary bg-accent/50" : "border-border"
-                  )}
-                  onDragOver={(e) => { e.preventDefault(); setDragOverPhase(phase); }}
-                  onDragLeave={() => setDragOverPhase(null)}
-                  onDrop={(e) => handleDrop(e, phase)}
-                >
-                  <div className="flex items-center justify-between px-3 py-2.5 border-b border-border">
-                    <div className="flex items-center gap-2">
-                      <PhaseBadge phase={phase} />
-                      <span className="text-xs text-muted-foreground font-medium">{phaseTasks.length}</span>
-                    </div>
-                    <button
-                      onClick={() => { setEditingTask(null); setDefaultPhase(phase); setDialogOpen(true); }}
-                      className="h-6 w-6 flex items-center justify-center rounded text-muted-foreground hover:bg-muted transition-colors"
-                    >
-                      <Plus className="h-3.5 w-3.5" />
-                    </button>
-                  </div>
-
-                  <div className="flex-1 overflow-y-auto p-2 space-y-2">
-                    {phaseTasks.length === 0 && (
-                      <div className="flex items-center justify-center py-8 text-xs text-muted-foreground">Sin tareas</div>
+            <div ref={scrollRef} className="flex gap-3 overflow-x-auto pb-4 h-full snap-x snap-mandatory md:snap-none scrollbar-thin">
+              {phases.map((phase) => {
+                const phaseTasks = tasks.filter((t) => t.phase === phase);
+                return (
+                  <div
+                    key={phase}
+                    className={cn(
+                      "flex-shrink-0 w-[280px] sm:w-[260px] md:flex-1 md:min-w-[180px] flex flex-col rounded-xl border bg-card transition-colors snap-center",
+                      dragOverPhase === phase ? "border-primary bg-accent/50" : "border-border"
                     )}
-                    {phaseTasks.map((task) => {
-                      const StatusIcon = statusConfig[task.status].icon;
-                      return (
-                        <div
-                          key={task.id}
-                          draggable
-                          onDragStart={(e) => handleDragStart(e, task.id)}
-                          onDragEnd={() => { setDraggedId(null); setDragOverPhase(null); }}
-                          className={cn(
-                            "rounded-lg border border-border bg-background p-3 cursor-grab active:cursor-grabbing hover:shadow-sm transition-all group",
-                            draggedId === task.id && "opacity-40 scale-95"
-                          )}
-                        >
-                          <div className="flex items-start justify-between gap-2">
-                            <div className="flex items-start gap-2 min-w-0 flex-1">
-                              <button onClick={() => toggleStatus(task.id)} className="mt-0.5 shrink-0">
-                                <StatusIcon className={cn("h-4 w-4", statusConfig[task.status].className)} />
-                              </button>
-                              <div className="min-w-0">
-                                <p className={cn("text-sm font-medium truncate", task.status === "completada" ? "line-through text-muted-foreground" : "text-foreground")}>
-                                  {task.title}
-                                </p>
-                                <div className="flex items-center gap-2 mt-1 text-xs text-muted-foreground">
-                                  <span className={cn(
-                                    "inline-flex items-center rounded-full px-1.5 py-0.5 font-medium",
-                                    task.priority === "alta" ? "bg-destructive/10 text-destructive" :
-                                    task.priority === "media" ? "bg-warning/10 text-warning" :
-                                    "bg-muted text-muted-foreground"
-                                  )}>
-                                    {task.priority}
-                                  </span>
+                    onDragOver={(e) => { e.preventDefault(); setDragOverPhase(phase); }}
+                    onDragLeave={() => setDragOverPhase(null)}
+                    onDrop={(e) => handleDrop(e, phase)}
+                  >
+                    <div className="flex items-center justify-between px-3 py-2.5 border-b border-border">
+                      <div className="flex items-center gap-2">
+                        <PhaseBadge phase={phase} />
+                        <span className="text-xs text-muted-foreground font-medium">{phaseTasks.length}</span>
+                      </div>
+                      <button
+                        onClick={() => { setEditingTask(null); setDefaultPhase(phase); setDialogOpen(true); }}
+                        className="h-6 w-6 flex items-center justify-center rounded text-muted-foreground hover:bg-muted transition-colors"
+                      >
+                        <Plus className="h-3.5 w-3.5" />
+                      </button>
+                    </div>
+
+                    <div className="flex-1 overflow-y-auto p-2 space-y-2">
+                      {phaseTasks.length === 0 && (
+                        <div className="flex items-center justify-center py-8 text-xs text-muted-foreground">Sin tareas</div>
+                      )}
+                      {phaseTasks.map((task) => {
+                        const StatusIcon = statusConfig[task.status].icon;
+                        return (
+                          <div
+                            key={task.id}
+                            draggable
+                            onDragStart={(e) => handleDragStart(e, task.id)}
+                            onDragEnd={() => { setDraggedId(null); setDragOverPhase(null); }}
+                            className={cn(
+                              "rounded-lg border border-border bg-background p-3 cursor-grab active:cursor-grabbing hover:shadow-sm transition-all group",
+                              draggedId === task.id && "opacity-40 scale-95"
+                            )}
+                          >
+                            <div className="flex items-start justify-between gap-2">
+                              <div className="flex items-start gap-2 min-w-0 flex-1">
+                                <button onClick={() => toggleStatus(task.id)} className="mt-0.5 shrink-0">
+                                  <StatusIcon className={cn("h-4 w-4", statusConfig[task.status].className)} />
+                                </button>
+                                <div className="min-w-0">
+                                  <p className={cn("text-sm font-medium truncate", task.status === "completada" ? "line-through text-muted-foreground" : "text-foreground")}>
+                                    {task.title}
+                                  </p>
+                                  <div className="flex items-center gap-2 mt-1 text-xs text-muted-foreground">
+                                    <span className={cn(
+                                      "inline-flex items-center rounded-full px-1.5 py-0.5 font-medium",
+                                      task.priority === "alta" ? "bg-destructive/10 text-destructive" :
+                                      task.priority === "media" ? "bg-warning/10 text-warning" :
+                                      "bg-muted text-muted-foreground"
+                                    )}>
+                                      {task.priority}
+                                    </span>
+                                  </div>
                                 </div>
                               </div>
+                              <GripVertical className="h-4 w-4 text-muted-foreground/40 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity" />
                             </div>
-                            <GripVertical className="h-4 w-4 text-muted-foreground/40 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity" />
-                          </div>
 
-                          <div className="flex items-center justify-between mt-2 text-xs text-muted-foreground">
-                            <span className="flex items-center gap-1"><Clock className="h-3 w-3" /> {task.hoursReal}/{task.hoursEstimated}h</span>
-                            <span className="flex items-center gap-1"><User className="h-3 w-3" /> {task.assignee.split(" ")[0]}</span>
-                          </div>
+                            <div className="flex items-center justify-between mt-2 text-xs text-muted-foreground">
+                              <span className="flex items-center gap-1"><Clock className="h-3 w-3" /> {task.hoursReal}/{task.hoursEstimated}h</span>
+                              <span className="flex items-center gap-1"><User className="h-3 w-3" /> {task.assignee.split(" ")[0]}</span>
+                            </div>
 
-                          <div className="flex items-center justify-between mt-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                            <button
-                              onClick={(e) => { e.stopPropagation(); moveTask(task.id, "prev"); }}
-                              disabled={phases.indexOf(task.phase) === 0}
-                              className="flex items-center gap-0.5 text-xs text-muted-foreground hover:text-foreground disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
-                            >
-                              <ChevronLeft className="h-3 w-3" /> Ant.
-                            </button>
-                            <div className="flex items-center gap-2">
+                            <div className="flex items-center justify-between mt-2 opacity-0 group-hover:opacity-100 transition-opacity">
                               <button
-                                onClick={(e) => { e.stopPropagation(); setEditingTask(task); setDialogOpen(true); }}
-                                className="text-xs text-muted-foreground hover:text-foreground transition-colors"
+                                onClick={(e) => { e.stopPropagation(); moveTask(task.id, "prev"); }}
+                                disabled={phases.indexOf(task.phase) === 0}
+                                className="flex items-center gap-0.5 text-xs text-muted-foreground hover:text-foreground disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
                               >
-                                Editar
+                                <ChevronLeft className="h-3 w-3" /> Ant.
                               </button>
+                              <div className="flex items-center gap-2">
+                                <button
+                                  onClick={(e) => { e.stopPropagation(); setEditingTask(task); setDialogOpen(true); }}
+                                  className="text-xs text-muted-foreground hover:text-foreground transition-colors"
+                                >
+                                  Editar
+                                </button>
+                                <button
+                                  onClick={(e) => { e.stopPropagation(); deleteTask(task.id); }}
+                                  className="text-xs text-destructive/70 hover:text-destructive transition-colors"
+                                >
+                                  Eliminar
+                                </button>
+                              </div>
                               <button
-                                onClick={(e) => { e.stopPropagation(); deleteTask(task.id); }}
-                                className="text-xs text-destructive/70 hover:text-destructive transition-colors"
+                                onClick={(e) => { e.stopPropagation(); moveTask(task.id, "next"); }}
+                                disabled={phases.indexOf(task.phase) === phases.length - 1}
+                                className="flex items-center gap-0.5 text-xs text-muted-foreground hover:text-foreground disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
                               >
-                                Eliminar
+                                Sig. <ChevronRight className="h-3 w-3" />
                               </button>
                             </div>
-                            <button
-                              onClick={(e) => { e.stopPropagation(); moveTask(task.id, "next"); }}
-                              disabled={phases.indexOf(task.phase) === phases.length - 1}
-                              className="flex items-center gap-0.5 text-xs text-muted-foreground hover:text-foreground disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
-                            >
-                              Sig. <ChevronRight className="h-3 w-3" />
-                            </button>
                           </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      ) : (
-        /* List view */
-        <div className="rounded-xl border border-border bg-card overflow-hidden">
-          <div className="divide-y divide-border">
-            {tasks.length === 0 && (
-              <div className="p-8 text-center text-sm text-muted-foreground">No hay tareas creadas.</div>
-            )}
-            {tasks.map((task) => {
-              const StatusIcon = statusConfig[task.status].icon;
-              return (
-                <div key={task.id} className="p-3 sm:p-4 flex items-center gap-3 hover:bg-muted/30 transition-colors cursor-pointer" onClick={() => { setEditingTask(task); setDialogOpen(true); }}>
-                  <button onClick={(e) => { e.stopPropagation(); toggleStatus(task.id); }}>
-                    <StatusIcon className={cn("h-4 w-4", statusConfig[task.status].className)} />
-                  </button>
-                  <div className="flex-1 min-w-0">
-                    <p className={cn("text-sm font-medium truncate", task.status === "completada" && "line-through text-muted-foreground")}>{task.title}</p>
-                    <div className="flex items-center gap-2 mt-0.5 text-xs text-muted-foreground">
-                      <span>{task.assignee}</span>
-                      <span>·</span>
-                      <span>{task.hoursReal}/{task.hoursEstimated}h</span>
+                        );
+                      })}
                     </div>
                   </div>
-                  <PhaseBadge phase={task.phase} className="hidden sm:inline-flex" />
-                  <span className={cn(
-                    "inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium",
-                    task.priority === "alta" ? "bg-destructive/10 text-destructive" :
-                    task.priority === "media" ? "bg-warning/10 text-warning" :
-                    "bg-muted text-muted-foreground"
-                  )}>
-                    {task.priority}
-                  </span>
-                  <button
-                    onClick={(e) => { e.stopPropagation(); deleteTask(task.id); }}
-                    className="text-xs text-destructive/70 hover:text-destructive transition-colors shrink-0"
-                  >
-                    Eliminar
-                  </button>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      )}
-
-      {/* Audit log - scrollable */}
-      {allAuditEntries.length > 0 && (
-        <Collapsible>
-          <CollapsibleTrigger className="w-full">
-            <div className="flex items-center gap-2 px-4 py-2.5 rounded-lg border border-border bg-card hover:bg-muted/30 transition-colors cursor-pointer">
-              <History className="h-3.5 w-3.5 text-muted-foreground" />
-              <span className="text-xs font-medium text-muted-foreground">Registro de auditoría</span>
-              <span className="text-[10px] text-muted-foreground/60">({allAuditEntries.length})</span>
-              <ChevronRight className="h-3 w-3 text-muted-foreground ml-auto transition-transform [[data-state=open]>&]:rotate-90" />
+                );
+              })}
             </div>
-          </CollapsibleTrigger>
-          <CollapsibleContent>
-            <div className="mt-1 rounded-xl border border-border bg-card">
-              <ScrollArea className="h-40">
-                <div className="p-3 space-y-1.5">
-                  {allAuditEntries.map((entry) => (
-                    <div key={entry.id} className="flex items-start gap-2 text-[11px] py-1 border-b border-border/30 last:border-0">
-                      <span className="text-muted-foreground/60 shrink-0 w-28 font-mono">{entry.timestamp}</span>
-                      <div className="flex-1 min-w-0">
-                        <span className="font-medium text-card-foreground">{entry.taskTitle}</span>
-                        <span className="text-muted-foreground"> — {entry.action}</span>
-                        {entry.from && entry.to && (
-                          <span className="ml-1 text-muted-foreground">
-                            <span className="text-destructive/70">{entry.from}</span>
-                            {" → "}
-                            <span className="text-chart-2">{entry.to}</span>
-                          </span>
-                        )}
+          </div>
+        ) : (
+          /* List view */
+          <div className="flex-1 min-h-0 overflow-y-auto rounded-xl border border-border bg-card">
+            <div className="divide-y divide-border">
+              {tasks.length === 0 && (
+                <div className="p-8 text-center text-sm text-muted-foreground">No hay tareas creadas.</div>
+              )}
+              {tasks.map((task) => {
+                const StatusIcon = statusConfig[task.status].icon;
+                return (
+                  <div key={task.id} className="p-3 sm:p-4 flex items-center gap-3 hover:bg-muted/30 transition-colors cursor-pointer" onClick={() => { setEditingTask(task); setDialogOpen(true); }}>
+                    <button onClick={(e) => { e.stopPropagation(); toggleStatus(task.id); }}>
+                      <StatusIcon className={cn("h-4 w-4", statusConfig[task.status].className)} />
+                    </button>
+                    <div className="flex-1 min-w-0">
+                      <p className={cn("text-sm font-medium truncate", task.status === "completada" && "line-through text-muted-foreground")}>{task.title}</p>
+                      <div className="flex items-center gap-2 mt-0.5 text-xs text-muted-foreground">
+                        <span>{task.assignee}</span>
+                        <span>·</span>
+                        <span>{task.hoursReal}/{task.hoursEstimated}h</span>
                       </div>
                     </div>
-                  ))}
-                </div>
-              </ScrollArea>
+                    <PhaseBadge phase={task.phase} className="hidden sm:inline-flex" />
+                    <span className={cn(
+                      "inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium",
+                      task.priority === "alta" ? "bg-destructive/10 text-destructive" :
+                      task.priority === "media" ? "bg-warning/10 text-warning" :
+                      "bg-muted text-muted-foreground"
+                    )}>
+                      {task.priority}
+                    </span>
+                    <button
+                      onClick={(e) => { e.stopPropagation(); deleteTask(task.id); }}
+                      className="text-xs text-destructive/70 hover:text-destructive transition-colors shrink-0"
+                    >
+                      Eliminar
+                    </button>
+                  </div>
+                );
+              })}
             </div>
-          </CollapsibleContent>
-        </Collapsible>
-      )}
+          </div>
+        )}
+
+        {/* Audit log - compact footer, never pushes tasks */}
+        {allAuditEntries.length > 0 && (
+          <Collapsible>
+            <CollapsibleTrigger className="w-full">
+              <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg border border-border bg-card hover:bg-muted/30 transition-colors cursor-pointer">
+                <History className="h-3 w-3 text-muted-foreground" />
+                <span className="text-[11px] font-medium text-muted-foreground">Auditoría</span>
+                <span className="text-[10px] text-muted-foreground/60">({allAuditEntries.length})</span>
+                <ChevronRight className="h-3 w-3 text-muted-foreground ml-auto transition-transform [[data-state=open]>&]:rotate-90" />
+              </div>
+            </CollapsibleTrigger>
+            <CollapsibleContent>
+              <div className="mt-1 rounded-lg border border-border bg-card">
+                <ScrollArea className="max-h-28 h-28">
+                  <div className="p-2 space-y-1">
+                    {allAuditEntries.map((entry) => (
+                      <div key={entry.id} className="flex items-start gap-2 text-[10px] py-0.5 border-b border-border/30 last:border-0">
+                        <span className="text-muted-foreground/60 shrink-0 w-24 font-mono">{entry.timestamp}</span>
+                        <div className="flex-1 min-w-0">
+                          <span className="font-medium text-card-foreground">{entry.taskTitle}</span>
+                          <span className="text-muted-foreground"> — {entry.action}</span>
+                          {entry.from && entry.to && (
+                            <span className="ml-1 text-muted-foreground">
+                              <span className="text-destructive/70">{entry.from}</span>
+                              {" → "}
+                              <span className="text-chart-2">{entry.to}</span>
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </ScrollArea>
+              </div>
+            </CollapsibleContent>
+          </Collapsible>
+        )}
+      </div>
 
       <TaskDialog
         open={dialogOpen}
