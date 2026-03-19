@@ -152,7 +152,7 @@ const ProjectDetailPage = () => {
     .sort((a, b) => b.id - a.id);
 
   return (
-    <div className="p-4 sm:p-6 lg:p-8 space-y-5 h-full flex flex-col">
+    <div className="p-4 sm:p-6 lg:p-8 space-y-5 h-full flex flex-col overflow-hidden">
       <Button variant="ghost" size="sm" onClick={() => navigate("/projects")} className="self-start">
         <ArrowLeft className="h-4 w-4 mr-1" /> Proyectos
       </Button>
