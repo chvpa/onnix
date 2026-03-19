@@ -13,10 +13,10 @@ import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 
 const recentProjects = [
-  { id: 1, name: "Portal E-commerce", client: "TechCorp", phase: "development" as const, progress: 65 },
+  { id: 1, name: "Portal E-commerce", client: "TechCorp", phase: "desarrollo" as const, progress: 65 },
   { id: 2, name: "App Móvil Finanzas", client: "FinBank", phase: "testing" as const, progress: 85 },
-  { id: 3, name: "Dashboard Analytics", client: "DataViz", phase: "planning" as const, progress: 25 },
-  { id: 4, name: "API Gateway", client: "CloudNet", phase: "deploy" as const, progress: 95 },
+  { id: 3, name: "Dashboard Analytics", client: "DataViz", phase: "pendiente" as const, progress: 25 },
+  { id: 4, name: "API Gateway", client: "CloudNet", phase: "produccion" as const, progress: 95 },
 ];
 
 const recentTickets = [
@@ -39,7 +39,7 @@ const Dashboard = () => {
       {/* Stats */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
         <StatCard title="Clientes activos" value={12} icon={Users} trend={{ value: 8, positive: true }} />
-        <StatCard title="Proyectos en curso" value={18} icon={FolderKanban} subtitle="4 en deploy esta semana" />
+        <StatCard title="Proyectos en curso" value={18} icon={FolderKanban} subtitle="4 en producción esta semana" />
         <StatCard title="Horas consumidas" value="1,240" icon={Clock} subtitle="de 2,500 contratadas" trend={{ value: 12, positive: false }} />
         <StatCard title="Tickets abiertos" value={7} icon={TicketCheck} trend={{ value: 15, positive: true }} />
       </div>
@@ -110,9 +110,9 @@ const Dashboard = () => {
       {/* Phase pipeline */}
       <div className="rounded-xl border border-border bg-card p-4 sm:p-5">
         <h2 className="text-sm sm:text-base font-semibold text-card-foreground mb-3 sm:mb-4">Pipeline de fases</h2>
-        <div className="grid grid-cols-3 sm:grid-cols-3 lg:grid-cols-6 gap-2 sm:gap-3">
-          {(["discovery", "planning", "development", "testing", "deploy", "support"] as const).map((phase, i) => {
-            const counts = [2, 3, 5, 4, 2, 2];
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3">
+          {(["pendiente", "desarrollo", "testing", "produccion"] as const).map((phase, i) => {
+            const counts = [4, 6, 4, 4];
             return (
               <div key={phase} className="rounded-lg border border-border p-3 sm:p-4 text-center hover:bg-muted/50 transition-colors cursor-pointer">
                 <PhaseBadge phase={phase} className="mb-1.5 sm:mb-2 text-[10px] sm:text-xs" />

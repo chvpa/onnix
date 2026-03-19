@@ -33,7 +33,7 @@ const ProjectDialog = ({ open, onOpenChange, project, onSave }: ProjectDialogPro
     name: "",
     clientId: 0,
     description: "",
-    phase: "discovery" as Phase,
+    phase: "pendiente" as Phase,
     assignee: "",
     hoursEstimated: 40,
   });
@@ -53,7 +53,7 @@ const ProjectDialog = ({ open, onOpenChange, project, onSave }: ProjectDialogPro
         name: "",
         clientId: 0,
         description: "",
-        phase: "discovery",
+        phase: "pendiente",
         assignee: "",
         hoursEstimated: 40,
       });

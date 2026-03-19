@@ -32,7 +32,7 @@ const ProjectDetailPage = () => {
   const [dragOverPhase, setDragOverPhase] = useState<Phase | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingTask, setEditingTask] = useState<Task | null>(null);
-  const [defaultPhase, setDefaultPhase] = useState<Phase>("discovery");
+  const [defaultPhase, setDefaultPhase] = useState<Phase>("pendiente");
   const scrollRef = useRef<HTMLDivElement>(null);
 
   if (!project) {
@@ -213,7 +213,7 @@ const ProjectDetailPage = () => {
               <List className="h-3.5 w-3.5 inline mr-1" /> Lista
             </button>
           </div>
-          <Button size="sm" onClick={() => { setEditingTask(null); setDefaultPhase("discovery"); setDialogOpen(true); }}>
+          <Button size="sm" onClick={() => { setEditingTask(null); setDefaultPhase("pendiente"); setDialogOpen(true); }}>
             <Plus className="h-4 w-4 mr-1" /> Nueva tarea
           </Button>
         </div>

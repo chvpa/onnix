@@ -1,14 +1,12 @@
-export type Phase = "discovery" | "planning" | "development" | "testing" | "deploy" | "support";
+export type Phase = "pendiente" | "desarrollo" | "testing" | "produccion";
 
-export const phases: Phase[] = ["discovery", "planning", "development", "testing", "deploy", "support"];
+export const phases: Phase[] = ["pendiente", "desarrollo", "testing", "produccion"];
 
 export const phaseLabels: Record<Phase, string> = {
-  discovery: "Descubrimiento",
-  planning: "Planificación",
-  development: "Desarrollo",
+  pendiente: "Pendiente",
+  desarrollo: "Desarrollo",
   testing: "Testing",
-  deploy: "Deploy",
-  support: "Soporte",
+  produccion: "Producción",
 };
 
 export type Priority = "alta" | "media" | "baja";
@@ -86,6 +84,7 @@ export interface Task {
   startDate: string;
   endDate?: string;
   priority: Priority;
+  rejections: number;
   auditLog: AuditEntry[];
 }
 
