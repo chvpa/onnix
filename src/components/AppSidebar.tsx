@@ -5,6 +5,7 @@ import {
   Users,
   FolderKanban,
   TicketCheck,
+  ClipboardCheck,
   Settings,
   ChevronLeft,
   Sun,
