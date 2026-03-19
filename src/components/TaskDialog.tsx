@@ -59,7 +59,7 @@ const TaskDialog = ({ open, onOpenChange, task, projectId, defaultPhase, onSave 
       setForm({
         title: "",
         description: "",
-        phase: defaultPhase || "discovery",
+        phase: defaultPhase || "pendiente",
         assignee: "",
         hoursEstimated: 4,
         priority: "media",

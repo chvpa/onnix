@@ -6,27 +6,23 @@ const phaseBadgeVariants = cva(
   {
     variants: {
       phase: {
-        discovery: "bg-phase-discovery/15 text-phase-discovery",
-        planning: "bg-phase-planning/15 text-phase-planning",
-        development: "bg-phase-development/15 text-phase-development",
+        pendiente: "bg-phase-pendiente/15 text-phase-pendiente",
+        desarrollo: "bg-phase-desarrollo/15 text-phase-desarrollo",
         testing: "bg-phase-testing/15 text-phase-testing",
-        deploy: "bg-phase-deploy/15 text-phase-deploy",
-        support: "bg-phase-support/15 text-phase-support",
+        produccion: "bg-phase-produccion/15 text-phase-produccion",
       },
     },
     defaultVariants: {
-      phase: "discovery",
+      phase: "pendiente",
     },
   }
 );
 
 const phaseLabels: Record<string, string> = {
-  discovery: "Descubrimiento",
-  planning: "Planificación",
-  development: "Desarrollo",
+  pendiente: "Pendiente",
+  desarrollo: "Desarrollo",
   testing: "Testing",
-  deploy: "Deploy",
-  support: "Soporte",
+  produccion: "Producción",
 };
 
 interface PhaseBadgeProps extends VariantProps<typeof phaseBadgeVariants> {
@@ -36,7 +32,7 @@ interface PhaseBadgeProps extends VariantProps<typeof phaseBadgeVariants> {
 const PhaseBadge = ({ phase, className }: PhaseBadgeProps) => {
   return (
     <span className={cn(phaseBadgeVariants({ phase }), className)}>
-      {phaseLabels[phase || "discovery"]}
+      {phaseLabels[phase || "pendiente"]}
     </span>
   );
 };

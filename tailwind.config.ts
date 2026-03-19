@@ -74,12 +74,10 @@ export default {
           ring: "var(--sidebar-ring)",
         },
         phase: {
-          discovery: "var(--phase-discovery)",
-          planning: "var(--phase-planning)",
-          development: "var(--phase-development)",
+          pendiente: "var(--phase-pendiente)",
+          desarrollo: "var(--phase-desarrollo)",
           testing: "var(--phase-testing)",
-          deploy: "var(--phase-deploy)",
-          support: "var(--phase-support)",
+          produccion: "var(--phase-produccion)",
         },
         chart: {
           1: "var(--chart-1)",

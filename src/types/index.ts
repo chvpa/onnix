@@ -84,6 +84,7 @@ export interface Task {
   startDate: string;
   endDate?: string;
   priority: Priority;
+  rejections: number;
   auditLog: AuditEntry[];
 }
 
