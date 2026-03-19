@@ -39,7 +39,7 @@ const TaskDialog = ({ open, onOpenChange, task, projectId, defaultPhase, onSave 
   const [form, setForm] = useState({
     title: "",
     description: "",
-    phase: (defaultPhase || "discovery") as Phase,
+    phase: (defaultPhase || "pendiente") as Phase,
     assignee: "",
     hoursEstimated: 4,
     priority: "media" as Priority,
