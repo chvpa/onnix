@@ -9,6 +9,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { PhaseBadge } from "@/components/PhaseBadge";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import TaskDialog from "@/components/TaskDialog";
 import { cn } from "@/lib/utils";
 import { mockProjects, mockTasks as initialTasks } from "@/data/mockData";
@@ -392,34 +393,40 @@ const ProjectDetailPage = () => {
 
       {/* Audit log - scrollable */}
       {allAuditEntries.length > 0 && (
-        <div className="rounded-xl border border-border bg-card">
-          <div className="flex items-center gap-2 px-4 py-3 border-b border-border">
-            <History className="h-4 w-4 text-muted-foreground" />
-            <h3 className="text-sm font-semibold text-card-foreground">Registro de auditoría</h3>
-            <span className="text-xs text-muted-foreground">({allAuditEntries.length})</span>
-          </div>
-          <ScrollArea className="h-52">
-            <div className="p-4 space-y-2">
-              {allAuditEntries.map((entry) => (
-                <div key={entry.id} className="flex items-start gap-3 text-xs py-1.5 border-b border-border/50 last:border-0">
-                  <span className="text-muted-foreground shrink-0 w-36 font-mono">{entry.timestamp}</span>
-                  <div className="flex-1">
-                    <span className="font-medium text-card-foreground">{entry.taskTitle}</span>
-                    <span className="text-muted-foreground"> — {entry.action}</span>
-                    {entry.from && entry.to && (
-                      <span className="ml-1 text-muted-foreground">
-                        <span className="text-destructive/70">{entry.from}</span>
-                        {" → "}
-                        <span className="text-success/90">{entry.to}</span>
-                      </span>
-                    )}
-                  </div>
-                  <span className="text-muted-foreground/60 shrink-0">{entry.user}</span>
-                </div>
-              ))}
+        <Collapsible>
+          <CollapsibleTrigger className="w-full">
+            <div className="flex items-center gap-2 px-4 py-2.5 rounded-lg border border-border bg-card hover:bg-muted/30 transition-colors cursor-pointer">
+              <History className="h-3.5 w-3.5 text-muted-foreground" />
+              <span className="text-xs font-medium text-muted-foreground">Registro de auditoría</span>
+              <span className="text-[10px] text-muted-foreground/60">({allAuditEntries.length})</span>
+              <ChevronRight className="h-3 w-3 text-muted-foreground ml-auto transition-transform [[data-state=open]>&]:rotate-90" />
             </div>
-          </ScrollArea>
-        </div>
+          </CollapsibleTrigger>
+          <CollapsibleContent>
+            <div className="mt-1 rounded-xl border border-border bg-card">
+              <ScrollArea className="h-40">
+                <div className="p-3 space-y-1.5">
+                  {allAuditEntries.map((entry) => (
+                    <div key={entry.id} className="flex items-start gap-2 text-[11px] py-1 border-b border-border/30 last:border-0">
+                      <span className="text-muted-foreground/60 shrink-0 w-28 font-mono">{entry.timestamp}</span>
+                      <div className="flex-1 min-w-0">
+                        <span className="font-medium text-card-foreground">{entry.taskTitle}</span>
+                        <span className="text-muted-foreground"> — {entry.action}</span>
+                        {entry.from && entry.to && (
+                          <span className="ml-1 text-muted-foreground">
+                            <span className="text-destructive/70">{entry.from}</span>
+                            {" → "}
+                            <span className="text-chart-2">{entry.to}</span>
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </ScrollArea>
+            </div>
+          </CollapsibleContent>
+        </Collapsible>
       )}
 
       <TaskDialog
