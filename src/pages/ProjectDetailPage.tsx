@@ -9,6 +9,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { PhaseBadge } from "@/components/PhaseBadge";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import TaskDialog from "@/components/TaskDialog";
 import { cn } from "@/lib/utils";
 import { mockProjects, mockTasks as initialTasks } from "@/data/mockData";
