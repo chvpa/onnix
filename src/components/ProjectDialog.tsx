@@ -1,24 +1,13 @@
 import { useState, useEffect } from "react";
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-  DialogFooter,
+  Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Project, Phase, phases, phaseLabels } from "@/types";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Project, ProjectPhase, projectPhases, projectPhaseLabels } from "@/types";
 import { mockClients } from "@/data/mockData";
 
 interface ProjectDialogProps {
@@ -33,7 +22,7 @@ const ProjectDialog = ({ open, onOpenChange, project, onSave }: ProjectDialogPro
     name: "",
     clientId: 0,
     description: "",
-    phase: "pendiente" as Phase,
+    phase: "descubrimiento" as ProjectPhase,
     assignee: "",
     hoursEstimated: 40,
   });
@@ -49,14 +38,7 @@ const ProjectDialog = ({ open, onOpenChange, project, onSave }: ProjectDialogPro
         hoursEstimated: project.hoursEstimated,
       });
     } else {
-      setForm({
-        name: "",
-        clientId: 0,
-        description: "",
-        phase: "pendiente",
-        assignee: "",
-        hoursEstimated: 40,
-      });
+      setForm({ name: "", clientId: 0, description: "", phase: "descubrimiento", assignee: "", hoursEstimated: 40 });
     }
   }, [project, open]);
 
@@ -81,9 +63,7 @@ const ProjectDialog = ({ open, onOpenChange, project, onSave }: ProjectDialogPro
       <DialogContent className="sm:max-w-lg">
         <DialogHeader>
           <DialogTitle>{project ? "Editar proyecto" : "Nuevo proyecto"}</DialogTitle>
-          <DialogDescription>
-            {project ? "Modifica los datos del proyecto." : "Crea un nuevo proyecto."}
-          </DialogDescription>
+          <DialogDescription>{project ? "Modifica los datos del proyecto." : "Crea un nuevo proyecto."}</DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
@@ -108,11 +88,11 @@ const ProjectDialog = ({ open, onOpenChange, project, onSave }: ProjectDialogPro
             </div>
             <div className="space-y-2">
               <Label>Fase inicial</Label>
-              <Select value={form.phase} onValueChange={(v) => setForm({ ...form, phase: v as Phase })}>
+              <Select value={form.phase} onValueChange={(v) => setForm({ ...form, phase: v as ProjectPhase })}>
                 <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent>
-                  {phases.map((p) => (
-                    <SelectItem key={p} value={p}>{phaseLabels[p]}</SelectItem>
+                  {projectPhases.map((p) => (
+                    <SelectItem key={p} value={p}>{projectPhaseLabels[p]}</SelectItem>
                   ))}
                 </SelectContent>
               </Select>

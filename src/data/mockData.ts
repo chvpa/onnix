@@ -1,4 +1,14 @@
-import { Client, Project, Task, Ticket } from "@/types";
+import { Client, ClientUser, Project, Task, Ticket } from "@/types";
+
+export const mockClientUsers: ClientUser[] = [
+  { id: 1, clientId: 1, name: "Juan Pérez", email: "juan@techcorp.com", role: "client", status: "active", createdAt: "2024-01-15" },
+  { id: 2, clientId: 1, name: "Sofía Fernández", email: "sofia@techcorp.com", role: "client", status: "active", createdAt: "2024-03-10" },
+  { id: 3, clientId: 2, name: "María López", email: "maria@finbank.com", role: "client", status: "active", createdAt: "2024-02-10" },
+  { id: 4, clientId: 3, name: "Carlos Ruiz", email: "carlos@dataviz.io", role: "client", status: "active", createdAt: "2024-03-01" },
+  { id: 5, clientId: 4, name: "Ana García", email: "ana@cloudnet.com", role: "client", status: "active", createdAt: "2024-01-20" },
+  { id: 6, clientId: 5, name: "Pedro Sánchez", email: "pedro@retailmax.com", role: "client", status: "inactive", createdAt: "2024-04-05" },
+  { id: 7, clientId: 6, name: "Laura Martín", email: "laura@edutech.com", role: "client", status: "active", createdAt: "2024-05-12" },
+];
 
 export const mockClients: Client[] = [
   { id: 1, name: "TechCorp", contact: "Juan Pérez", email: "juan@techcorp.com", phone: "+54 11 4567-8901", hoursTotal: 500, hoursUsed: 320, projects: 3, status: "active", createdAt: "2024-01-15" },
@@ -12,11 +22,11 @@ export const mockClients: Client[] = [
 export const mockProjects: Project[] = [
   { id: 1, name: "Portal E-commerce", clientId: 1, client: "TechCorp", phase: "desarrollo", progress: 65, hoursEstimated: 120, hoursReal: 82, tasksTotal: 24, tasksDone: 16, assignee: "Carlos Dev", description: "Plataforma de e-commerce con carrito de compras, pasarela de pagos y panel de administración.", startDate: "2024-02-01" },
   { id: 2, name: "App Móvil Finanzas", clientId: 2, client: "FinBank", phase: "testing", progress: 85, hoursEstimated: 200, hoursReal: 175, tasksTotal: 32, tasksDone: 28, assignee: "Pedro Dev", description: "Aplicación móvil para consulta de saldos, transferencias y pagos de servicios.", startDate: "2024-01-15" },
-  { id: 3, name: "Dashboard Analytics", clientId: 3, client: "DataViz", phase: "pendiente", progress: 25, hoursEstimated: 80, hoursReal: 18, tasksTotal: 12, tasksDone: 3, assignee: "Laura DA", description: "Dashboard interactivo con gráficos de métricas de negocio y exportación de reportes.", startDate: "2024-04-01" },
+  { id: 3, name: "Dashboard Analytics", clientId: 3, client: "DataViz", phase: "descubrimiento", progress: 25, hoursEstimated: 80, hoursReal: 18, tasksTotal: 12, tasksDone: 3, assignee: "Laura DA", description: "Dashboard interactivo con gráficos de métricas de negocio y exportación de reportes.", startDate: "2024-04-01" },
   { id: 4, name: "API Gateway", clientId: 4, client: "CloudNet", phase: "produccion", progress: 95, hoursEstimated: 60, hoursReal: 58, tasksTotal: 15, tasksDone: 14, assignee: "Carlos Dev", description: "Gateway centralizado para gestión de microservicios con autenticación y rate limiting.", startDate: "2024-03-10" },
-  { id: 5, name: "CRM Integration", clientId: 1, client: "TechCorp", phase: "pendiente", progress: 10, hoursEstimated: 90, hoursReal: 8, tasksTotal: 8, tasksDone: 1, assignee: "Ana CX", description: "Integración del CRM existente con el portal e-commerce y sistema de facturación.", startDate: "2024-05-20" },
+  { id: 5, name: "CRM Integration", clientId: 1, client: "TechCorp", phase: "planificacion", progress: 10, hoursEstimated: 90, hoursReal: 8, tasksTotal: 8, tasksDone: 1, assignee: "Ana CX", description: "Integración del CRM existente con el portal e-commerce y sistema de facturación.", startDate: "2024-05-20" },
   { id: 6, name: "Mobile Banking v2", clientId: 2, client: "FinBank", phase: "desarrollo", progress: 45, hoursEstimated: 150, hoursReal: 65, tasksTotal: 28, tasksDone: 12, assignee: "Pedro Dev", description: "Segunda versión de la app bancaria con biometría, inversiones y chatbot.", startDate: "2024-04-15" },
-  { id: 7, name: "Data Pipeline", clientId: 3, client: "DataViz", phase: "testing", progress: 78, hoursEstimated: 100, hoursReal: 80, tasksTotal: 20, tasksDone: 16, assignee: "Laura DA", description: "Pipeline de datos ETL para procesamiento y normalización de fuentes externas.", startDate: "2024-03-01" },
+  { id: 7, name: "Data Pipeline", clientId: 3, client: "DataViz", phase: "en_aprobacion", progress: 78, hoursEstimated: 100, hoursReal: 80, tasksTotal: 20, tasksDone: 16, assignee: "Laura DA", description: "Pipeline de datos ETL para procesamiento y normalización de fuentes externas.", startDate: "2024-03-01" },
   { id: 8, name: "Cloud Migration", clientId: 4, client: "CloudNet", phase: "produccion", progress: 100, hoursEstimated: 40, hoursReal: 42, tasksTotal: 10, tasksDone: 10, assignee: "Carlos Dev", description: "Migración de infraestructura on-premise a la nube con zero downtime.", startDate: "2024-01-10", endDate: "2024-04-20" },
 ];
 
@@ -46,10 +56,10 @@ export const mockTasks: Task[] = [
 ];
 
 export const mockTickets: Ticket[] = [
-  { id: 1, title: "Error en checkout - no procesa pagos", client: "TechCorp", clientId: 1, type: "Bug", priority: "alta", status: "abierto", assignee: "Carlos Dev", created: "hace 2h", messages: 3, description: "Al intentar finalizar la compra con tarjeta de crédito, el sistema muestra error 500.", linkedTaskIds: [] },
-  { id: 2, title: "Actualizar logo en header", client: "FinBank", clientId: 2, type: "Cambio visual", priority: "baja", status: "en_progreso", assignee: "Ana CX", created: "hace 5h", messages: 1, description: "Necesitamos cambiar el logo del header por la nueva versión de marca.", linkedTaskIds: [] },
-  { id: 3, title: "Rendimiento lento en dashboard", client: "DataViz", clientId: 3, type: "Performance", priority: "media", status: "abierto", assignee: "Sin asignar", created: "hace 1d", messages: 5, description: "El dashboard tarda más de 10 segundos en cargar los gráficos principales.", linkedTaskIds: [] },
-  { id: 4, title: "Nuevo campo en formulario de registro", client: "CloudNet", clientId: 4, type: "Feature", priority: "media", status: "en_progreso", assignee: "Pedro Dev", created: "hace 2d", messages: 8, description: "Agregar campo de CUIT/CUIL al formulario de registro de usuarios.", linkedTaskIds: [5] },
-  { id: 5, title: "Error 500 en API de reportes", client: "TechCorp", clientId: 1, type: "Bug", priority: "alta", status: "abierto", assignee: "Carlos Dev", created: "hace 3h", messages: 2, description: "La API de reportes devuelve error 500 al consultar datos del último mes.", linkedTaskIds: [] },
-  { id: 6, title: "Exportar CSV no incluye fechas", client: "EduTech", clientId: 6, type: "Bug", priority: "media", status: "resuelto", assignee: "Laura DA", created: "hace 3d", messages: 4, description: "Al exportar a CSV desde el panel de reportes, las columnas de fecha aparecen vacías.", linkedTaskIds: [] },
+  { id: 1, title: "Error en checkout - no procesa pagos", client: "TechCorp", clientId: 1, type: "Bug en Dashboard", priority: "alta", status: "abierto", assignee: "Carlos Dev", created: "hace 2h", createdBy: "Juan Pérez", createdByRole: "client", messages: 3, description: "Al intentar finalizar la compra con tarjeta de crédito, el sistema muestra error 500.", linkedTaskIds: [] },
+  { id: 2, title: "Actualizar logo en header", client: "FinBank", clientId: 2, type: "Nueva implementación", priority: "baja", status: "en_progreso", assignee: "Ana CX", created: "hace 5h", createdBy: "María López", createdByRole: "client", messages: 1, description: "Necesitamos cambiar el logo del header por la nueva versión de marca.", linkedTaskIds: [] },
+  { id: 3, title: "Rendimiento lento en dashboard", client: "DataViz", clientId: 3, type: "Bug en Dashboard", priority: "media", status: "abierto", assignee: "Sin asignar", created: "hace 1d", createdBy: "Carlos Ruiz", createdByRole: "client", messages: 5, description: "El dashboard tarda más de 10 segundos en cargar los gráficos principales.", linkedTaskIds: [] },
+  { id: 4, title: "Nuevo campo en formulario de registro", client: "CloudNet", clientId: 4, type: "Nueva implementación", priority: "media", status: "en_progreso", assignee: "Pedro Dev", created: "hace 2d", createdBy: "Ana García", createdByRole: "client", messages: 8, description: "Agregar campo de CUIT/CUIL al formulario de registro de usuarios.", linkedTaskIds: [5] },
+  { id: 5, title: "Error 500 en API de reportes", client: "TechCorp", clientId: 1, type: "Bug en Bot", priority: "alta", status: "abierto", assignee: "Carlos Dev", created: "hace 3h", createdBy: "Sofía Fernández", createdByRole: "client", messages: 2, description: "La API de reportes devuelve error 500 al consultar datos del último mes.", linkedTaskIds: [] },
+  { id: 6, title: "Exportar CSV no incluye fechas", client: "EduTech", clientId: 6, type: "Bug en Dashboard", priority: "media", status: "resuelto", assignee: "Laura DA", created: "hace 3d", createdBy: "Laura Martín", createdByRole: "client", messages: 4, description: "Al exportar a CSV desde el panel de reportes, las columnas de fecha aparecen vacías.", linkedTaskIds: [] },
 ];

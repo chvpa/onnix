@@ -78,6 +78,9 @@ export default {
           desarrollo: "var(--phase-desarrollo)",
           testing: "var(--phase-testing)",
           produccion: "var(--phase-produccion)",
+          descubrimiento: "var(--phase-descubrimiento)",
+          planificacion: "var(--phase-planificacion)",
+          "en-aprobacion": "var(--phase-en-aprobacion)",
         },
         chart: {
           1: "var(--chart-1)",

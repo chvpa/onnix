@@ -1,25 +1,14 @@
 import { useState, useEffect } from "react";
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-  DialogFooter,
+  Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Ticket, Priority } from "@/types";
-import { mockClients } from "@/data/mockData";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Ticket, Priority, ticketTypes } from "@/types";
+import { mockClients, mockClientUsers } from "@/data/mockData";
 
 interface TicketDialogProps {
   open: boolean;
@@ -34,17 +23,18 @@ const priorityLabels: Record<Priority, string> = {
   baja: "Baja",
 };
 
-const typeOptions = ["Bug", "Feature", "Cambio visual", "Performance", "Consulta"];
-
 const TicketDialog = ({ open, onOpenChange, ticket, onSave }: TicketDialogProps) => {
   const [form, setForm] = useState({
     title: "",
     clientId: 0,
-    type: "Bug",
+    type: "Bug en Dashboard" as string,
     priority: "media" as Priority,
     assignee: "",
     description: "",
+    createdBy: "",
   });
+
+  const clientUsers = mockClientUsers.filter((u) => u.clientId === form.clientId && u.status === "active");
 
   useEffect(() => {
     if (ticket) {
@@ -55,16 +45,10 @@ const TicketDialog = ({ open, onOpenChange, ticket, onSave }: TicketDialogProps)
         priority: ticket.priority,
         assignee: ticket.assignee,
         description: ticket.description,
+        createdBy: ticket.createdBy,
       });
     } else {
-      setForm({
-        title: "",
-        clientId: 0,
-        type: "Bug",
-        priority: "media",
-        assignee: "",
-        description: "",
-      });
+      setForm({ title: "", clientId: 0, type: "Bug en Dashboard", priority: "media", assignee: "", description: "", createdBy: "" });
     }
   }, [ticket, open]);
 
@@ -75,6 +59,7 @@ const TicketDialog = ({ open, onOpenChange, ticket, onSave }: TicketDialogProps)
       ...form,
       id: ticket?.id,
       client: client?.name || "",
+      createdByRole: "client" as const,
       status: ticket?.status || "abierto",
       created: ticket?.created || "ahora",
       messages: ticket?.messages || 0,
@@ -88,9 +73,7 @@ const TicketDialog = ({ open, onOpenChange, ticket, onSave }: TicketDialogProps)
       <DialogContent className="sm:max-w-lg">
         <DialogHeader>
           <DialogTitle>{ticket ? "Editar ticket" : "Nuevo ticket"}</DialogTitle>
-          <DialogDescription>
-            {ticket ? "Modifica los datos del ticket." : "Crea un nuevo ticket de soporte."}
-          </DialogDescription>
+          <DialogDescription>{ticket ? "Modifica los datos del ticket." : "Crea un nuevo ticket de soporte."}</DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
@@ -104,7 +87,7 @@ const TicketDialog = ({ open, onOpenChange, ticket, onSave }: TicketDialogProps)
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label>Cliente</Label>
-              <Select value={form.clientId ? String(form.clientId) : ""} onValueChange={(v) => setForm({ ...form, clientId: Number(v) })}>
+              <Select value={form.clientId ? String(form.clientId) : ""} onValueChange={(v) => setForm({ ...form, clientId: Number(v), createdBy: "" })}>
                 <SelectTrigger><SelectValue placeholder="Seleccionar cliente" /></SelectTrigger>
                 <SelectContent>
                   {mockClients.map((c) => (
@@ -114,11 +97,25 @@ const TicketDialog = ({ open, onOpenChange, ticket, onSave }: TicketDialogProps)
               </Select>
             </div>
             <div className="space-y-2">
+              <Label>Creado por</Label>
+              <Select value={form.createdBy} onValueChange={(v) => setForm({ ...form, createdBy: v })}>
+                <SelectTrigger><SelectValue placeholder="Seleccionar usuario" /></SelectTrigger>
+                <SelectContent>
+                  {clientUsers.map((u) => (
+                    <SelectItem key={u.id} value={u.name}>{u.name}</SelectItem>
+                  ))}
+                  {clientUsers.length === 0 && (
+                    <SelectItem value="_none" disabled>Sin usuarios</SelectItem>
+                  )}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-2">
               <Label>Tipo</Label>
               <Select value={form.type} onValueChange={(v) => setForm({ ...form, type: v })}>
                 <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent>
-                  {typeOptions.map((t) => (
+                  {ticketTypes.map((t) => (
                     <SelectItem key={t} value={t}>{t}</SelectItem>
                   ))}
                 </SelectContent>
@@ -135,7 +132,7 @@ const TicketDialog = ({ open, onOpenChange, ticket, onSave }: TicketDialogProps)
                 </SelectContent>
               </Select>
             </div>
-            <div className="space-y-2">
+            <div className="space-y-2 sm:col-span-2">
               <Label htmlFor="ticket-assignee">Asignado a</Label>
               <Input id="ticket-assignee" value={form.assignee} onChange={(e) => setForm({ ...form, assignee: e.target.value })} />
             </div>

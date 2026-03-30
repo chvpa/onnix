@@ -1,42 +1,32 @@
 import {
-  Users,
-  FolderKanban,
-  Clock,
-  TicketCheck,
-  ArrowRight,
-  AlertCircle,
+  Users, FolderKanban, Clock, TicketCheck, ArrowRight, AlertCircle,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import StatCard from "@/components/StatCard";
 import { PhaseBadge } from "@/components/PhaseBadge";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
-
-const recentProjects = [
-  { id: 1, name: "Portal E-commerce", client: "TechCorp", phase: "desarrollo" as const, progress: 65 },
-  { id: 2, name: "App Móvil Finanzas", client: "FinBank", phase: "testing" as const, progress: 85 },
-  { id: 3, name: "Dashboard Analytics", client: "DataViz", phase: "pendiente" as const, progress: 25 },
-  { id: 4, name: "API Gateway", client: "CloudNet", phase: "produccion" as const, progress: 95 },
-];
-
-const recentTickets = [
-  { id: 1, title: "Error en checkout", client: "TechCorp", priority: "alta", time: "hace 2h" },
-  { id: 2, title: "Actualizar logo", client: "FinBank", priority: "baja", time: "hace 5h" },
-  { id: 3, title: "Rendimiento lento", client: "DataViz", priority: "media", time: "hace 1d" },
-];
+import { ProjectPhase, projectPhases, projectPhaseLabels } from "@/types";
+import { mockProjects, mockTickets } from "@/data/mockData";
 
 const Dashboard = () => {
   const navigate = useNavigate();
 
+  const recentProjects = mockProjects.slice(0, 4);
+  const recentTickets = mockTickets.filter((t) => t.status !== "resuelto").slice(0, 3);
+
+  const phaseCounts = projectPhases.map((phase) => ({
+    phase,
+    count: mockProjects.filter((p) => p.phase === phase).length,
+  }));
+
   return (
     <div className="p-4 sm:p-6 lg:p-8 space-y-6 lg:space-y-8 max-w-7xl">
-      {/* Header */}
       <div>
         <h1 className="text-xl sm:text-2xl font-bold text-foreground">Dashboard</h1>
         <p className="text-sm text-muted-foreground mt-0.5">Resumen general de la plataforma</p>
       </div>
 
-      {/* Stats */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
         <StatCard title="Clientes activos" value={12} icon={Users} trend={{ value: 8, positive: true }} />
         <StatCard title="Proyectos en curso" value={18} icon={FolderKanban} subtitle="4 en producción esta semana" />
@@ -45,7 +35,6 @@ const Dashboard = () => {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 lg:gap-6">
-        {/* Recent Projects */}
         <div className="lg:col-span-2 rounded-xl border border-border bg-card">
           <div className="flex items-center justify-between border-b border-border px-4 py-3 sm:p-5">
             <h2 className="text-sm sm:text-base font-semibold text-card-foreground">Proyectos recientes</h2>
@@ -58,6 +47,7 @@ const Dashboard = () => {
               <div
                 key={project.id}
                 className="flex items-center justify-between p-3 sm:p-4 hover:bg-muted/50 transition-colors cursor-pointer"
+                onClick={() => navigate(`/projects/${project.id}`)}
               >
                 <div className="space-y-0.5 min-w-0 flex-1">
                   <p className="text-sm font-medium text-card-foreground truncate">{project.name}</p>
@@ -75,7 +65,6 @@ const Dashboard = () => {
           </div>
         </div>
 
-        {/* Recent Tickets */}
         <div className="rounded-xl border border-border bg-card">
           <div className="flex items-center justify-between border-b border-border px-4 py-3 sm:p-5">
             <h2 className="text-sm sm:text-base font-semibold text-card-foreground">Tickets recientes</h2>
@@ -85,7 +74,7 @@ const Dashboard = () => {
           </div>
           <div className="divide-y divide-border">
             {recentTickets.map((ticket) => (
-              <div key={ticket.id} className="flex items-start gap-3 p-3 sm:p-4 hover:bg-muted/50 transition-colors cursor-pointer">
+              <div key={ticket.id} className="flex items-start gap-3 p-3 sm:p-4 hover:bg-muted/50 transition-colors cursor-pointer" onClick={() => navigate(`/tickets/${ticket.id}`)}>
                 <AlertCircle
                   className={cn(
                     "h-4 w-4 mt-0.5 shrink-0",
@@ -98,7 +87,7 @@ const Dashboard = () => {
                   <div className="flex items-center gap-2 text-xs text-muted-foreground">
                     <span>{ticket.client}</span>
                     <span>·</span>
-                    <span>{ticket.time}</span>
+                    <span>{ticket.created}</span>
                   </div>
                 </div>
               </div>
@@ -107,20 +96,17 @@ const Dashboard = () => {
         </div>
       </div>
 
-      {/* Phase pipeline */}
+      {/* Phase pipeline - 6 phases */}
       <div className="rounded-xl border border-border bg-card p-4 sm:p-5">
         <h2 className="text-sm sm:text-base font-semibold text-card-foreground mb-3 sm:mb-4">Pipeline de fases</h2>
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3">
-          {(["pendiente", "desarrollo", "testing", "produccion"] as const).map((phase, i) => {
-            const counts = [4, 6, 4, 4];
-            return (
-              <div key={phase} className="rounded-lg border border-border p-3 sm:p-4 text-center hover:bg-muted/50 transition-colors cursor-pointer">
-                <PhaseBadge phase={phase} className="mb-1.5 sm:mb-2 text-[10px] sm:text-xs" />
-                <p className="text-lg sm:text-2xl font-bold text-card-foreground">{counts[i]}</p>
-                <p className="text-[10px] sm:text-xs text-muted-foreground mt-0.5">proyectos</p>
-              </div>
-            );
-          })}
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2 sm:gap-3">
+          {phaseCounts.map(({ phase, count }) => (
+            <div key={phase} className="rounded-lg border border-border p-3 sm:p-4 text-center hover:bg-muted/50 transition-colors cursor-pointer">
+              <PhaseBadge phase={phase} className="mb-1.5 sm:mb-2 text-[10px] sm:text-xs" />
+              <p className="text-lg sm:text-2xl font-bold text-card-foreground">{count}</p>
+              <p className="text-[10px] sm:text-xs text-muted-foreground mt-0.5">proyectos</p>
+            </div>
+          ))}
         </div>
       </div>
     </div>

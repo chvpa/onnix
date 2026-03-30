@@ -1,17 +1,31 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Search, Plus, AlertCircle, Clock, MessageSquare } from "lucide-react";
+import { Search, Plus, AlertCircle, Clock, MessageSquare, Filter, Code2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { mockTickets as initialTickets } from "@/data/mockData";
-import { Ticket, TicketStatus } from "@/types";
+import { Ticket, TicketStatus, Priority, ticketTypes } from "@/types";
 import TicketDialog from "@/components/TicketDialog";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuCheckboxItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 const statusLabels: Record<TicketStatus, string> = {
   abierto: "Abierto",
   en_progreso: "En progreso",
   resuelto: "Resuelto",
+};
+
+const priorityLabels: Record<Priority, string> = {
+  alta: "Alta",
+  media: "Media",
+  baja: "Baja",
 };
 
 const TicketsPage = () => {
@@ -20,6 +34,8 @@ const TicketsPage = () => {
   const [search, setSearch] = useState("");
   const [activeStatus, setActiveStatus] = useState<TicketStatus | "all">("all");
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [filterPriority, setFilterPriority] = useState<Priority | null>(null);
+  const [filterType, setFilterType] = useState<string | null>(null);
 
   const handleSaveTicket = (data: Partial<Ticket>) => {
     if (data.id) {
@@ -35,7 +51,9 @@ const TicketsPage = () => {
       t.title.toLowerCase().includes(search.toLowerCase()) ||
       t.client.toLowerCase().includes(search.toLowerCase());
     const matchesStatus = activeStatus === "all" || t.status === activeStatus;
-    return matchesSearch && matchesStatus;
+    const matchesPriority = !filterPriority || t.priority === filterPriority;
+    const matchesType = !filterType || t.type === filterType;
+    return matchesSearch && matchesStatus && matchesPriority && matchesType;
   });
 
   const counts = {
@@ -45,6 +63,8 @@ const TicketsPage = () => {
     resuelto: tickets.filter((t) => t.status === "resuelto").length,
   };
 
+  const hasActiveFilters = filterPriority !== null || filterType !== null;
+
   return (
     <div className="p-4 sm:p-6 lg:p-8 space-y-6 max-w-7xl">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
@@ -52,9 +72,14 @@ const TicketsPage = () => {
           <h1 className="text-xl sm:text-2xl font-bold text-foreground">Tickets de soporte</h1>
           <p className="text-sm text-muted-foreground mt-0.5">Gestión de solicitudes y soporte</p>
         </div>
-        <Button onClick={() => setDialogOpen(true)}>
-          <Plus className="h-4 w-4 mr-1" /> Nuevo ticket
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button variant="outline" onClick={() => navigate("/projects")}>
+            <Code2 className="h-4 w-4 mr-1" /> Nuevo Desarrollo
+          </Button>
+          <Button onClick={() => setDialogOpen(true)}>
+            <Plus className="h-4 w-4 mr-1" /> Nuevo ticket
+          </Button>
+        </div>
       </div>
 
       <div className="flex flex-col sm:flex-row gap-3">
@@ -77,6 +102,51 @@ const TicketsPage = () => {
               {status === "all" ? "Todos" : statusLabels[status]} ({counts[status]})
             </button>
           ))}
+
+          {/* Filter dropdown */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" size="sm" className={cn("gap-1", hasActiveFilters && "border-primary text-primary")}>
+                <Filter className="h-3.5 w-3.5" />
+                Filtros
+                {hasActiveFilters && <span className="ml-1 rounded-full bg-primary text-primary-foreground w-4 h-4 text-[10px] flex items-center justify-center">{(filterPriority ? 1 : 0) + (filterType ? 1 : 0)}</span>}
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-56">
+              <DropdownMenuLabel>Prioridad</DropdownMenuLabel>
+              {(["alta", "media", "baja"] as Priority[]).map((p) => (
+                <DropdownMenuCheckboxItem
+                  key={p}
+                  checked={filterPriority === p}
+                  onCheckedChange={(checked) => setFilterPriority(checked ? p : null)}
+                >
+                  {priorityLabels[p]}
+                </DropdownMenuCheckboxItem>
+              ))}
+              <DropdownMenuSeparator />
+              <DropdownMenuLabel>Tipo</DropdownMenuLabel>
+              {ticketTypes.map((t) => (
+                <DropdownMenuCheckboxItem
+                  key={t}
+                  checked={filterType === t}
+                  onCheckedChange={(checked) => setFilterType(checked ? t : null)}
+                >
+                  {t}
+                </DropdownMenuCheckboxItem>
+              ))}
+              {hasActiveFilters && (
+                <>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuCheckboxItem
+                    checked={false}
+                    onCheckedChange={() => { setFilterPriority(null); setFilterType(null); }}
+                  >
+                    Limpiar filtros
+                  </DropdownMenuCheckboxItem>
+                </>
+              )}
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </div>
 
@@ -102,6 +172,7 @@ const TicketsPage = () => {
                   <div className="flex items-center gap-2 mt-1 flex-wrap">
                     <span className="text-xs text-muted-foreground">{ticket.client}</span>
                     <span className="text-xs text-muted-foreground hidden sm:inline">·</span>
+                    <span className="text-xs text-muted-foreground">por {ticket.createdBy}</span>
                     <span className={cn(
                       "inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium",
                       ticket.status === "abierto" ? "bg-destructive/10 text-destructive" :
@@ -124,6 +195,9 @@ const TicketsPage = () => {
             </div>
           </div>
         ))}
+        {filtered.length === 0 && (
+          <div className="text-center py-12 text-sm text-muted-foreground">No se encontraron tickets.</div>
+        )}
       </div>
       <TicketDialog open={dialogOpen} onOpenChange={setDialogOpen} onSave={handleSaveTicket} />
     </div>

@@ -49,7 +49,7 @@ const mockMessages: Record<number, Message[]> = {
     { id: 8, author: "Pedro Dev", role: "team", content: "Mañana a primera hora hacemos el deploy.", timestamp: "17:00" },
   ],
   5: [
-    { id: 1, author: "Juan Pérez", role: "client", content: "La API de reportes devuelve error 500 cuando consulto datos del último mes.", timestamp: "11:00" },
+    { id: 1, author: "Sofía Fernández", role: "client", content: "La API de reportes devuelve error 500 cuando consulto datos del último mes.", timestamp: "11:00" },
     { id: 2, author: "Carlos Dev", role: "team", content: "Revisando. ¿Podés compartir el endpoint exacto que estás usando?", timestamp: "11:30" },
   ],
   6: [
@@ -59,6 +59,9 @@ const mockMessages: Record<number, Message[]> = {
     { id: 4, author: "Laura DA", role: "team", content: "De nada, cerramos el ticket.", timestamp: "15:10" },
   ],
 };
+
+// Simulate: set to true to see client view (no status change)
+const isClientView = false;
 
 const TicketDetailPage = () => {
   const { id } = useParams();
@@ -83,8 +86,8 @@ const TicketDetailPage = () => {
     if (!newMessage.trim()) return;
     const msg: Message = {
       id: Date.now(),
-      author: "Tú (Equipo)",
-      role: "team",
+      author: isClientView ? ticket.createdBy : "Tú (Equipo)",
+      role: isClientView ? "client" : "team",
       content: newMessage.trim(),
       timestamp: new Date().toLocaleTimeString("es-AR", { hour: "2-digit", minute: "2-digit" }),
     };
@@ -105,12 +108,13 @@ const TicketDetailPage = () => {
       <div className="flex-1 flex flex-col lg:flex-row gap-4 min-h-0">
         {/* Conversation panel */}
         <div className="flex-1 flex flex-col rounded-xl border border-border bg-card min-h-0">
-          {/* Ticket header */}
           <div className="px-4 py-3 border-b border-border">
             <div className="flex items-start justify-between gap-3">
               <div>
                 <h1 className="text-base font-semibold text-card-foreground">{ticket.title}</h1>
-                <p className="text-xs text-muted-foreground mt-0.5">{ticket.client} · {ticket.created}</p>
+                <p className="text-xs text-muted-foreground mt-0.5">
+                  {ticket.client} · por {ticket.createdBy} · {ticket.created}
+                </p>
               </div>
               <span className={cn(
                 "inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium shrink-0",
@@ -123,7 +127,6 @@ const TicketDetailPage = () => {
             </div>
           </div>
 
-          {/* Messages */}
           <ScrollArea className="flex-1 min-h-0">
             <div className="p-4 space-y-4">
               {messages.map((msg) => (
@@ -160,7 +163,6 @@ const TicketDetailPage = () => {
             </div>
           </ScrollArea>
 
-          {/* Message input */}
           <div className="p-3 border-t border-border">
             <div className="flex gap-2">
               <Textarea
@@ -190,7 +192,6 @@ const TicketDetailPage = () => {
 
         {/* Sidebar info */}
         <div className="w-full lg:w-72 space-y-3 shrink-0">
-          {/* Details */}
           <div className="rounded-xl border border-border bg-card p-4 space-y-3">
             <h3 className="text-sm font-semibold text-card-foreground">Detalles</h3>
             <div className="space-y-2.5 text-sm">
@@ -214,34 +215,39 @@ const TicketDetailPage = () => {
                 <span className="font-medium text-card-foreground">{ticket.assignee}</span>
               </div>
               <div className="flex items-center justify-between">
+                <span className="text-muted-foreground flex items-center gap-1.5"><User className="h-3.5 w-3.5" /> Creado por</span>
+                <span className="font-medium text-card-foreground">{ticket.createdBy}</span>
+              </div>
+              <div className="flex items-center justify-between">
                 <span className="text-muted-foreground flex items-center gap-1.5"><Clock className="h-3.5 w-3.5" /> Creado</span>
                 <span className="text-card-foreground">{ticket.created}</span>
               </div>
             </div>
           </div>
 
-          {/* Status actions */}
-          <div className="rounded-xl border border-border bg-card p-4 space-y-3">
-            <h3 className="text-sm font-semibold text-card-foreground">Cambiar estado</h3>
-            <div className="grid grid-cols-1 gap-1.5">
-              {(["abierto", "en_progreso", "resuelto"] as TicketStatus[]).map((s) => (
-                <button
-                  key={s}
-                  onClick={() => handleStatusChange(s)}
-                  className={cn(
-                    "text-left px-3 py-2 rounded-lg text-xs font-medium transition-colors border",
-                    status === s
-                      ? "bg-primary text-primary-foreground border-primary"
-                      : "bg-card text-muted-foreground border-border hover:bg-muted"
-                  )}
-                >
-                  {statusLabels[s]}
-                </button>
-              ))}
+          {/* Status actions - hidden for client view */}
+          {!isClientView && (
+            <div className="rounded-xl border border-border bg-card p-4 space-y-3">
+              <h3 className="text-sm font-semibold text-card-foreground">Cambiar estado</h3>
+              <div className="grid grid-cols-1 gap-1.5">
+                {(["abierto", "en_progreso", "resuelto"] as TicketStatus[]).map((s) => (
+                  <button
+                    key={s}
+                    onClick={() => handleStatusChange(s)}
+                    className={cn(
+                      "text-left px-3 py-2 rounded-lg text-xs font-medium transition-colors border",
+                      status === s
+                        ? "bg-primary text-primary-foreground border-primary"
+                        : "bg-card text-muted-foreground border-border hover:bg-muted"
+                    )}
+                  >
+                    {statusLabels[s]}
+                  </button>
+                ))}
+              </div>
             </div>
-          </div>
+          )}
 
-          {/* Description */}
           <div className="rounded-xl border border-border bg-card p-4 space-y-2">
             <h3 className="text-sm font-semibold text-card-foreground">Descripción</h3>
             <p className="text-sm text-muted-foreground leading-relaxed">{ticket.description}</p>
