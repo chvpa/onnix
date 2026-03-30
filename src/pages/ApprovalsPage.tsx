@@ -75,75 +75,41 @@ const ApprovalsPage = () => {
           {testingTasks.map((task) => {
             const project = getProject(task.projectId);
             return (
-              <div
-                key={task.id}
-                className="rounded-xl border border-border bg-card p-4 sm:p-5 hover:shadow-sm transition-all"
-              >
+              <div key={task.id} className="rounded-xl border border-border bg-card p-4 sm:p-5 hover:shadow-sm transition-all">
                 <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
                   <div className="flex-1 min-w-0 space-y-1.5">
                     <div className="flex items-center gap-2 flex-wrap">
                       <p className="text-sm font-semibold text-card-foreground">{task.title}</p>
                       <PhaseBadge phase="testing" />
-                      <span
-                        className={cn(
-                          "inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-medium",
-                          task.priority === "alta"
-                            ? "bg-destructive/10 text-destructive"
-                            : task.priority === "media"
-                            ? "bg-warning/10 text-warning"
-                            : "bg-muted text-muted-foreground"
-                        )}
-                      >
+                      <span className={cn(
+                        "inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-medium",
+                        task.priority === "alta" ? "bg-destructive/10 text-destructive" :
+                        task.priority === "media" ? "bg-warning/10 text-warning" :
+                        "bg-muted text-muted-foreground"
+                      )}>
                         {task.priority}
                       </span>
                     </div>
-
-                    {task.description && (
-                      <p className="text-xs text-muted-foreground line-clamp-2">{task.description}</p>
-                    )}
-
+                    {task.description && <p className="text-xs text-muted-foreground line-clamp-2">{task.description}</p>}
                     <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-muted-foreground">
-                      <span
-                        className="flex items-center gap-1 cursor-pointer hover:text-foreground transition-colors"
-                        onClick={() => navigate(`/projects/${task.projectId}`)}
-                      >
-                        <FolderKanban className="h-3 w-3" />
-                        {project?.name || `Proyecto #${task.projectId}`}
+                      <span className="flex items-center gap-1 cursor-pointer hover:text-foreground transition-colors" onClick={() => navigate(`/projects/${task.projectId}`)}>
+                        <FolderKanban className="h-3 w-3" /> {project?.name || `Proyecto #${task.projectId}`}
                       </span>
-                      <span className="flex items-center gap-1">
-                        <User className="h-3 w-3" />
-                        {task.assignee}
-                      </span>
-                      <span className="flex items-center gap-1">
-                        <Clock className="h-3 w-3" />
-                        {task.hoursReal}/{task.hoursEstimated}h
-                      </span>
+                      <span className="flex items-center gap-1"><User className="h-3 w-3" /> {task.assignee}</span>
+                      <span className="flex items-center gap-1"><Clock className="h-3 w-3" /> {task.hoursReal}/{task.hoursEstimated}h</span>
                       {task.rejections > 0 && (
                         <span className="flex items-center gap-1 text-destructive font-medium">
-                          <AlertTriangle className="h-3 w-3" />
-                          Rechazos: {task.rejections}
+                          <AlertTriangle className="h-3 w-3" /> Rechazos: {task.rejections}
                         </span>
                       )}
                     </div>
                   </div>
-
                   <div className="flex items-center gap-2 shrink-0">
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      className="text-destructive border-destructive/30 hover:bg-destructive/10 hover:text-destructive"
-                      onClick={() => handleReject(task.id)}
-                    >
-                      <XCircle className="h-4 w-4 mr-1" />
-                      Rechazar
+                    <Button size="sm" variant="outline" className="text-destructive border-destructive/30 hover:bg-destructive/10 hover:text-destructive" onClick={() => handleReject(task.id)}>
+                      <XCircle className="h-4 w-4 mr-1" /> Rechazar
                     </Button>
-                    <Button
-                      size="sm"
-                      className="bg-phase-produccion text-white hover:bg-phase-produccion/90"
-                      onClick={() => handleApprove(task.id)}
-                    >
-                      <CheckCircle2 className="h-4 w-4 mr-1" />
-                      Aprobar
+                    <Button size="sm" className="bg-phase-produccion text-white hover:bg-phase-produccion/90" onClick={() => handleApprove(task.id)}>
+                      <CheckCircle2 className="h-4 w-4 mr-1" /> Aprobar
                     </Button>
                   </div>
                 </div>

@@ -1,9 +1,20 @@
+// Task phases (4)
 export type Phase = "pendiente" | "desarrollo" | "testing" | "produccion";
-
 export const phases: Phase[] = ["pendiente", "desarrollo", "testing", "produccion"];
-
 export const phaseLabels: Record<Phase, string> = {
   pendiente: "Pendiente",
+  desarrollo: "Desarrollo",
+  testing: "Testing",
+  produccion: "Producción",
+};
+
+// Project phases (6)
+export type ProjectPhase = "descubrimiento" | "planificacion" | "en_aprobacion" | "desarrollo" | "testing" | "produccion";
+export const projectPhases: ProjectPhase[] = ["descubrimiento", "planificacion", "en_aprobacion", "desarrollo", "testing", "produccion"];
+export const projectPhaseLabels: Record<ProjectPhase, string> = {
+  descubrimiento: "Descubrimiento",
+  planificacion: "Planificación",
+  en_aprobacion: "En aprobación",
   desarrollo: "Desarrollo",
   testing: "Testing",
   produccion: "Producción",
@@ -12,6 +23,9 @@ export const phaseLabels: Record<Phase, string> = {
 export type Priority = "alta" | "media" | "baja";
 export type TicketStatus = "abierto" | "en_progreso" | "resuelto";
 export type TaskStatus = "pendiente" | "en_progreso" | "completada" | "bloqueada";
+
+export type TicketType = "Nueva implementación" | "Bug en Dashboard" | "Bug en Bot" | "Otros";
+export const ticketTypes: TicketType[] = ["Nueva implementación", "Bug en Dashboard", "Bug en Bot", "Otros"];
 
 export type AppRole = "product_owner" | "customer_experience" | "developer" | "data_analyst" | "client";
 
@@ -41,6 +55,16 @@ export interface TeamMember {
   createdAt: string;
 }
 
+export interface ClientUser {
+  id: number;
+  clientId: number;
+  name: string;
+  email: string;
+  role: "client";
+  status: "active" | "inactive";
+  createdAt: string;
+}
+
 export interface Client {
   id: number;
   name: string;
@@ -52,6 +76,7 @@ export interface Client {
   projects: number;
   status: "active" | "warning" | "exhausted";
   createdAt: string;
+  users?: ClientUser[];
 }
 
 export interface Project {
@@ -59,7 +84,7 @@ export interface Project {
   name: string;
   clientId: number;
   client: string;
-  phase: Phase;
+  phase: ProjectPhase;
   progress: number;
   hoursEstimated: number;
   hoursReal: number;
@@ -102,11 +127,13 @@ export interface Ticket {
   title: string;
   client: string;
   clientId: number;
-  type: string;
+  type: TicketType | string;
   priority: Priority;
   status: TicketStatus;
   assignee: string;
   created: string;
+  createdBy: string;
+  createdByRole: "client" | "team";
   messages: number;
   description: string;
   linkedTaskIds: number[];

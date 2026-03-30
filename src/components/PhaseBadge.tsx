@@ -10,6 +10,9 @@ const phaseBadgeVariants = cva(
         desarrollo: "bg-phase-desarrollo/15 text-phase-desarrollo",
         testing: "bg-phase-testing/15 text-phase-testing",
         produccion: "bg-phase-produccion/15 text-phase-produccion",
+        descubrimiento: "bg-phase-descubrimiento/15 text-phase-descubrimiento",
+        planificacion: "bg-phase-planificacion/15 text-phase-planificacion",
+        en_aprobacion: "bg-phase-en-aprobacion/15 text-phase-en-aprobacion",
       },
     },
     defaultVariants: {
@@ -23,6 +26,9 @@ const phaseLabels: Record<string, string> = {
   desarrollo: "Desarrollo",
   testing: "Testing",
   produccion: "Producción",
+  descubrimiento: "Descubrimiento",
+  planificacion: "Planificación",
+  en_aprobacion: "En aprobación",
 };
 
 interface PhaseBadgeProps extends VariantProps<typeof phaseBadgeVariants> {

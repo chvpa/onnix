@@ -219,9 +219,8 @@ const ProjectDetailPage = () => {
         </div>
       </div>
 
-      {/* Main content area - takes all remaining space */}
+      {/* Main content area */}
       <div className="flex-1 min-h-0 flex flex-col gap-3 overflow-hidden">
-        {/* Kanban / List - scrollable, takes priority */}
         {view === "kanban" ? (
           <div className="flex-1 min-h-0 relative">
             <button
@@ -299,6 +298,9 @@ const ProjectDetailPage = () => {
                                     )}>
                                       {task.priority}
                                     </span>
+                                    {task.rejections > 0 && (
+                                      <span className="text-destructive font-medium">×{task.rejections}</span>
+                                    )}
                                   </div>
                                 </div>
                               </div>
@@ -350,7 +352,6 @@ const ProjectDetailPage = () => {
             </div>
           </div>
         ) : (
-          /* List view */
           <div className="flex-1 min-h-0 overflow-y-auto rounded-xl border border-border bg-card">
             <div className="divide-y divide-border">
               {tasks.length === 0 && (
@@ -365,27 +366,21 @@ const ProjectDetailPage = () => {
                     </button>
                     <div className="flex-1 min-w-0">
                       <p className={cn("text-sm font-medium truncate", task.status === "completada" && "line-through text-muted-foreground")}>{task.title}</p>
-                      <div className="flex items-center gap-2 mt-0.5 text-xs text-muted-foreground">
+                      <div className="flex items-center gap-2 text-xs text-muted-foreground mt-0.5">
+                        <PhaseBadge phase={task.phase} className="text-[10px] px-1.5 py-0" />
                         <span>{task.assignee}</span>
-                        <span>·</span>
                         <span>{task.hoursReal}/{task.hoursEstimated}h</span>
+                        {task.rejections > 0 && <span className="text-destructive">Rechazos: {task.rejections}</span>}
                       </div>
                     </div>
-                    <PhaseBadge phase={task.phase} className="hidden sm:inline-flex" />
                     <span className={cn(
-                      "inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium",
+                      "inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-medium shrink-0",
                       task.priority === "alta" ? "bg-destructive/10 text-destructive" :
                       task.priority === "media" ? "bg-warning/10 text-warning" :
                       "bg-muted text-muted-foreground"
                     )}>
                       {task.priority}
                     </span>
-                    <button
-                      onClick={(e) => { e.stopPropagation(); deleteTask(task.id); }}
-                      className="text-xs text-destructive/70 hover:text-destructive transition-colors shrink-0"
-                    >
-                      Eliminar
-                    </button>
                   </div>
                 );
               })}
@@ -393,40 +388,27 @@ const ProjectDetailPage = () => {
           </div>
         )}
 
-        {/* Audit log - compact footer, never pushes tasks */}
+        {/* Audit log - compact collapsible footer */}
         {allAuditEntries.length > 0 && (
           <Collapsible>
-            <CollapsibleTrigger className="w-full">
-              <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg border border-border bg-card hover:bg-muted/30 transition-colors cursor-pointer">
-                <History className="h-3 w-3 text-muted-foreground" />
-                <span className="text-[11px] font-medium text-muted-foreground">Auditoría</span>
-                <span className="text-[10px] text-muted-foreground/60">({allAuditEntries.length})</span>
-                <ChevronRight className="h-3 w-3 text-muted-foreground ml-auto transition-transform [[data-state=open]>&]:rotate-90" />
-              </div>
+            <CollapsibleTrigger className="flex items-center gap-2 text-xs text-muted-foreground hover:text-foreground transition-colors w-full py-1">
+              <History className="h-3.5 w-3.5" />
+              <span className="font-medium">Registro de auditoría ({allAuditEntries.length})</span>
             </CollapsibleTrigger>
             <CollapsibleContent>
-              <div className="mt-1 rounded-lg border border-border bg-card">
-                <ScrollArea className="max-h-28 h-28">
-                  <div className="p-2 space-y-1">
-                    {allAuditEntries.map((entry) => (
-                      <div key={entry.id} className="flex items-start gap-2 text-[10px] py-0.5 border-b border-border/30 last:border-0">
-                        <span className="text-muted-foreground/60 shrink-0 w-24 font-mono">{entry.timestamp}</span>
-                        <div className="flex-1 min-w-0">
-                          <span className="font-medium text-card-foreground">{entry.taskTitle}</span>
-                          <span className="text-muted-foreground"> — {entry.action}</span>
-                          {entry.from && entry.to && (
-                            <span className="ml-1 text-muted-foreground">
-                              <span className="text-destructive/70">{entry.from}</span>
-                              {" → "}
-                              <span className="text-chart-2">{entry.to}</span>
-                            </span>
-                          )}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </ScrollArea>
-              </div>
+              <ScrollArea className="max-h-28 rounded-lg border border-border bg-card mt-1">
+                <div className="p-2 space-y-1">
+                  {allAuditEntries.slice(0, 20).map((entry) => (
+                    <div key={entry.id} className="flex items-start gap-2 text-xs py-1 px-2 rounded hover:bg-muted/50">
+                      <span className="text-muted-foreground shrink-0 w-28 font-mono">{entry.timestamp}</span>
+                      <span className="text-muted-foreground shrink-0">{entry.user}</span>
+                      <span className="text-foreground font-medium">{entry.action}</span>
+                      {entry.from && <span className="text-muted-foreground">({entry.from} → {entry.to})</span>}
+                      <span className="text-muted-foreground/60 truncate ml-auto">— {entry.taskTitle}</span>
+                    </div>
+                  ))}
+                </div>
+              </ScrollArea>
             </CollapsibleContent>
           </Collapsible>
         )}

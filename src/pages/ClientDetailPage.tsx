@@ -1,9 +1,16 @@
+import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { ArrowLeft, Clock, FolderKanban, Mail, Phone, User, Calendar } from "lucide-react";
+import { ArrowLeft, Clock, FolderKanban, Mail, Phone, User, Calendar, Plus, UserPlus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { PhaseBadge } from "@/components/PhaseBadge";
 import { cn } from "@/lib/utils";
-import { mockClients, mockProjects, mockTickets } from "@/data/mockData";
+import { mockClients, mockProjects, mockTickets, mockClientUsers as initialClientUsers } from "@/data/mockData";
+import { ClientUser } from "@/types";
+import {
+  Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 const ClientDetailPage = () => {
   const { id } = useParams();
@@ -11,6 +18,9 @@ const ClientDetailPage = () => {
   const client = mockClients.find((c) => c.id === Number(id));
   const clientProjects = mockProjects.filter((p) => p.clientId === Number(id));
   const clientTickets = mockTickets.filter((t) => t.clientId === Number(id));
+  const [clientUsers, setClientUsers] = useState<ClientUser[]>(initialClientUsers.filter((u) => u.clientId === Number(id)));
+  const [userDialogOpen, setUserDialogOpen] = useState(false);
+  const [userForm, setUserForm] = useState({ name: "", email: "" });
 
   if (!client) {
     return (
@@ -25,6 +35,22 @@ const ClientDetailPage = () => {
 
   const hoursPercent = (client.hoursUsed / client.hoursTotal) * 100;
   const hoursRemaining = client.hoursTotal - client.hoursUsed;
+
+  const handleCreateUser = (e: React.FormEvent) => {
+    e.preventDefault();
+    const newUser: ClientUser = {
+      id: Date.now(),
+      clientId: client.id,
+      name: userForm.name,
+      email: userForm.email,
+      role: "client",
+      status: "active",
+      createdAt: new Date().toISOString().split("T")[0],
+    };
+    setClientUsers((prev) => [...prev, newUser]);
+    setUserForm({ name: "", email: "" });
+    setUserDialogOpen(false);
+  };
 
   return (
     <div className="p-4 sm:p-6 lg:p-8 space-y-6 max-w-5xl">
@@ -78,6 +104,41 @@ const ClientDetailPage = () => {
         </div>
       </div>
 
+      {/* Client Users */}
+      <div>
+        <div className="flex items-center justify-between mb-3">
+          <h2 className="text-lg font-semibold text-foreground flex items-center gap-2">
+            <UserPlus className="h-5 w-5" /> Usuarios del cliente ({clientUsers.length})
+          </h2>
+          <Button size="sm" onClick={() => setUserDialogOpen(true)}>
+            <Plus className="h-4 w-4 mr-1" /> Nuevo usuario
+          </Button>
+        </div>
+        {clientUsers.length === 0 ? (
+          <p className="text-sm text-muted-foreground">Sin usuarios registrados.</p>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+            {clientUsers.map((user) => (
+              <div key={user.id} className="rounded-lg border border-border bg-card p-3 flex items-center gap-3">
+                <div className="h-8 w-8 rounded-full bg-secondary flex items-center justify-center text-xs font-bold text-secondary-foreground">
+                  {user.name.split(" ").map((w) => w[0]).join("").slice(0, 2)}
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="text-sm font-medium text-card-foreground truncate">{user.name}</p>
+                  <p className="text-xs text-muted-foreground truncate">{user.email}</p>
+                </div>
+                <span className={cn(
+                  "inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-medium",
+                  user.status === "active" ? "bg-success/10 text-success" : "bg-muted text-muted-foreground"
+                )}>
+                  {user.status === "active" ? "Activo" : "Inactivo"}
+                </span>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
       {/* Projects */}
       <div>
         <div className="flex items-center justify-between mb-3">
@@ -124,7 +185,7 @@ const ClientDetailPage = () => {
         ) : (
           <div className="space-y-2">
             {clientTickets.map((ticket) => (
-              <div key={ticket.id} className="rounded-lg border border-border bg-card p-3 flex items-center justify-between">
+              <div key={ticket.id} className="rounded-lg border border-border bg-card p-3 flex items-center justify-between cursor-pointer hover:shadow-sm transition-shadow" onClick={() => navigate(`/tickets/${ticket.id}`)}>
                 <div>
                   <p className="text-sm font-medium text-card-foreground">{ticket.title}</p>
                   <div className="flex items-center gap-2 mt-0.5 text-xs text-muted-foreground">
@@ -137,6 +198,7 @@ const ClientDetailPage = () => {
                       {ticket.status === "abierto" ? "Abierto" : ticket.status === "en_progreso" ? "En progreso" : "Resuelto"}
                     </span>
                     <span>{ticket.type}</span>
+                    <span>por {ticket.createdBy}</span>
                     <span>{ticket.created}</span>
                   </div>
                 </div>
@@ -145,6 +207,30 @@ const ClientDetailPage = () => {
           </div>
         )}
       </div>
+
+      {/* Create User Dialog */}
+      <Dialog open={userDialogOpen} onOpenChange={setUserDialogOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Nuevo usuario del cliente</DialogTitle>
+            <DialogDescription>Crea un usuario para que {client.name} pueda visualizar proyectos y cargar tickets.</DialogDescription>
+          </DialogHeader>
+          <form onSubmit={handleCreateUser} className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="user-name">Nombre</Label>
+              <Input id="user-name" value={userForm.name} onChange={(e) => setUserForm({ ...userForm, name: e.target.value })} required />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="user-email">Email</Label>
+              <Input id="user-email" type="email" value={userForm.email} onChange={(e) => setUserForm({ ...userForm, email: e.target.value })} required />
+            </div>
+            <DialogFooter>
+              <Button type="button" variant="outline" onClick={() => setUserDialogOpen(false)}>Cancelar</Button>
+              <Button type="submit">Crear usuario</Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { PhaseBadge } from "@/components/PhaseBadge";
 import { cn } from "@/lib/utils";
 import { mockProjects as initialProjects } from "@/data/mockData";
-import { Phase, Project, phases, phaseLabels } from "@/types";
+import { ProjectPhase, Project, projectPhases, projectPhaseLabels } from "@/types";
 import ProjectDialog from "@/components/ProjectDialog";
 
 const ProjectsPage = () => {
@@ -15,7 +15,7 @@ const ProjectsPage = () => {
   const [view, setView] = useState<"kanban" | "list">("kanban");
   const [projects, setProjects] = useState<Project[]>(initialProjects);
   const [draggedId, setDraggedId] = useState<number | null>(null);
-  const [dragOverPhase, setDragOverPhase] = useState<Phase | null>(null);
+  const [dragOverPhase, setDragOverPhase] = useState<ProjectPhase | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
 
@@ -39,7 +39,7 @@ const ProjectsPage = () => {
     e.dataTransfer.effectAllowed = "move";
   };
 
-  const handleDrop = (e: React.DragEvent, targetPhase: Phase) => {
+  const handleDrop = (e: React.DragEvent, targetPhase: ProjectPhase) => {
     e.preventDefault();
     if (draggedId !== null) {
       setProjects((prev) =>
@@ -54,10 +54,10 @@ const ProjectsPage = () => {
     setProjects((prev) =>
       prev.map((p) => {
         if (p.id !== projectId) return p;
-        const currentIdx = phases.indexOf(p.phase);
+        const currentIdx = projectPhases.indexOf(p.phase);
         const newIdx = direction === "next" ? currentIdx + 1 : currentIdx - 1;
-        if (newIdx < 0 || newIdx >= phases.length) return p;
-        return { ...p, phase: phases[newIdx] };
+        if (newIdx < 0 || newIdx >= projectPhases.length) return p;
+        return { ...p, phase: projectPhases[newIdx] };
       })
     );
   };
@@ -111,13 +111,13 @@ const ProjectsPage = () => {
           </button>
 
           <div ref={scrollRef} className="flex gap-3 overflow-x-auto pb-4 h-full snap-x snap-mandatory md:snap-none scrollbar-thin">
-            {phases.map((phase) => {
+            {projectPhases.map((phase) => {
               const phaseProjects = filtered.filter((p) => p.phase === phase);
               return (
                 <div
                   key={phase}
                   className={cn(
-                    "flex-shrink-0 w-[280px] sm:w-[260px] md:flex-1 md:min-w-[200px] flex flex-col rounded-xl border bg-card transition-colors snap-center",
+                    "flex-shrink-0 w-[250px] sm:w-[230px] md:flex-1 md:min-w-[160px] flex flex-col rounded-xl border bg-card transition-colors snap-center",
                     dragOverPhase === phase ? "border-primary bg-accent/50" : "border-border"
                   )}
                   onDragOver={(e) => { e.preventDefault(); setDragOverPhase(phase); }}
@@ -163,11 +163,11 @@ const ProjectsPage = () => {
                           <span className="flex items-center gap-1"><User className="h-3 w-3" /> {project.assignee.split(" ")[0]}</span>
                         </div>
                         <div className="flex items-center justify-between mt-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                          <button onClick={(e) => { e.stopPropagation(); moveProject(project.id, "prev"); }} disabled={phases.indexOf(project.phase) === 0} className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground disabled:opacity-30 disabled:cursor-not-allowed transition-colors">
-                            <ChevronLeft className="h-3 w-3" /> Anterior
+                          <button onClick={(e) => { e.stopPropagation(); moveProject(project.id, "prev"); }} disabled={projectPhases.indexOf(project.phase) === 0} className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground disabled:opacity-30 disabled:cursor-not-allowed transition-colors">
+                            <ChevronLeft className="h-3 w-3" /> Ant.
                           </button>
-                          <button onClick={(e) => { e.stopPropagation(); moveProject(project.id, "next"); }} disabled={phases.indexOf(project.phase) === phases.length - 1} className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground disabled:opacity-30 disabled:cursor-not-allowed transition-colors">
-                            Siguiente <ChevronRight className="h-3 w-3" />
+                          <button onClick={(e) => { e.stopPropagation(); moveProject(project.id, "next"); }} disabled={projectPhases.indexOf(project.phase) === projectPhases.length - 1} className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground disabled:opacity-30 disabled:cursor-not-allowed transition-colors">
+                            Sig. <ChevronRight className="h-3 w-3" />
                           </button>
                         </div>
                       </div>
